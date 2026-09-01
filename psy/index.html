@@ -619,8 +619,15 @@ if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
   navigator.serviceWorker.register("sw.js").catch(function(){});
 }
 
-setInterval(function(){today=dow();renderBanner();renderList();},30000);
-document.addEventListener("visibilitychange",function(){if(!document.hidden){renderBanner();renderList();}});
+function tick(){
+  var d=dow();
+  if(d!==today){                       // настав новий день — самі перемикаємось на нього
+    today=d; cur=(today<ND?today:0); view=null; render(); return;
+  }
+  renderBanner();renderList();
+}
+setInterval(tick,30000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)tick();});
 })();
 </script>
 </body>
