@@ -1,5 +1,5 @@
 /* Кеш для офлайн-роботи. Змінюй CACHE при оновленні файлів. */
-var CACHE = "rozklad-v4";
+var CACHE = "psy-v1";
 var FILES = ["./","./index.html","./manifest.webmanifest",
              "./icon-192.png","./icon-512.png","./apple-touch-icon.png"];
 
