@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Розклад пар</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1420">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Розклад">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234c8dff'/%3E%3Ctext x='50' y='72' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+<script id="seed" type="application/json">{"v": 2, "savedAt": 1788291688790, "title": "241-1", "theme": "dark", "weekMode": "auto", "anchorWeek": 2957, "anchorType": "odd", "days": [[{"id": "mon3", "num": 3, "type": "pra", "week": "all", "subj": "Програмування мовою Java", "teacher": "Лазорик В.В.", "room": "8-216", "start": "11:30", "end": "12:50", "note": ""}, {"id": "mon4", "num": 4, "type": "pra", "week": "all", "subj": "Іноземна мова (за проф. спрямуванням)", "teacher": "Кшевецький В.С.", "room": "8-120", "start": "13:00", "end": "14:20", "note": ""}, {"id": "mon5", "num": 5, "type": "lek", "week": "all", "subj": "Веб програмування", "teacher": "Лазорик В.В.", "room": "8-221", "start": "14:40", "end": "16:00", "note": ""}, {"id": "mon6", "num": 6, "type": "lek", "week": "all", "subj": "Програмування мовою Java", "teacher": "Лазорик В.В.", "room": "8-221", "start": "16:10", "end": "17:30", "note": ""}], [{"id": "tue2", "num": 2, "type": "lek", "week": "all", "subj": "Ймовірнісні моделі та алгоритми", "teacher": "Антонюк С.В.", "room": "8-221", "start": "09:50", "end": "11:10", "note": ""}, {"id": "tue3", "num": 3, "type": "pra", "week": "all", "subj": "Веб програмування", "teacher": "Нестеренко В.В.", "room": "8-216", "start": "11:30", "end": "12:50", "note": ""}, {"id": "tue4", "num": 4, "type": "lek", "week": "all", "subj": "Теорія прийняття рішень", "teacher": "Руснак М.А.", "room": "8-221", "start": "13:00", "end": "14:20", "note": ""}], [{"id": "wed2", "num": 2, "type": "pra", "week": "all", "subj": "Сучасні парадигми програмування мовою Python", "teacher": "Кириченко Є.О.", "room": "8-216", "start": "09:50", "end": "11:10", "note": ""}, {"id": "wed3", "num": 3, "type": "lek", "week": "all", "subj": "Сучасні парадигми програмування мовою Python", "teacher": "Кириченко Є.О.", "room": "8-221", "start": "11:30", "end": "12:50", "note": ""}, {"id": "wed4", "num": 4, "type": "pra", "week": "all", "subj": "Теорія прийняття рішень", "teacher": "Руснак М.А.", "room": "8-211", "start": "13:00", "end": "14:20", "note": ""}], [{"id": "thu1", "num": 1, "type": "pra", "week": "all", "subj": "Організація баз даних та знань", "teacher": "Кириченко Є.О.", "room": "8-213", "start": "08:20", "end": "09:40", "note": ""}, {"id": "thu2", "num": 2, "type": "lek", "week": "all", "subj": "Організація баз даних та знань", "teacher": "Кириченко О.О.", "room": "8-221", "start": "09:50", "end": "11:10", "note": ""}, {"id": "thu3", "num": 3, "type": "pra", "week": "all", "subj": "Ймовірнісні моделі та алгоритми", "teacher": "Антонюк С.В.", "room": "8-212", "start": "11:30", "end": "12:50", "note": ""}], [{"id": "fri1", "num": 1, "type": "pra", "week": "even", "subj": "Основи національного спротиву (для хлопців)", "teacher": "", "room": "військова кафедра", "start": "08:20", "end": "09:40", "note": "з 01.10.2026"}, {"id": "fri2", "num": 2, "type": "pra", "week": "even", "subj": "Основи національного спротиву (для хлопців)", "teacher": "", "room": "військова кафедра", "start": "09:50", "end": "11:10", "note": "з 01.10.2026"}, {"id": "fri3", "num": 3, "type": "pra", "week": "even", "subj": "Основи національного спротиву (для хлопців)", "teacher": "", "room": "військова кафедра", "start": "11:30", "end": "12:50", "note": "з 01.10.2026"}]], "seedId": "d1788291688"}</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1420; --bg2:#161d2c; --card:#1b2334; --card2:#212b3f;
+  --tx:#e8edf7; --tx2:#8e9bb3; --line:#2a3548;
+  --acc:#4c8dff;
+  --lek:#4c8dff; --pra:#34d399; --lab:#a78bfa; --sem:#fbbf24; --con:#f472b6;
+  --safe: env(safe-area-inset-bottom, 0px);
+}
+html[data-t="light"]{
+  --bg:#f4f6fb; --bg2:#ffffff; --card:#ffffff; --card2:#eef2f9;
+  --tx:#131a26; --tx2:#64708a; --line:#dfe5f0;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  -webkit-text-size-adjust:100%}
+body{padding-bottom:calc(96px + var(--safe))}
+.wrap{max-width:720px;margin:0 auto;padding:0 14px}
+
+header{position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.hd{display:flex;align-items:center;gap:9px;padding:12px 0 10px}
+.hd h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.3px;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iconbtn{height:38px;min-width:38px;padding:0 11px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card);color:var(--tx);font-size:13px;font-weight:700;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;gap:5px}
+.iconbtn.big{font-size:17px;font-weight:400;padding:0}
+.iconbtn:active{background:var(--card2)}
+.iconbtn.alt{background:var(--acc);border-color:var(--acc);color:#fff}
+
+.days{display:flex;gap:7px;overflow-x:auto;padding:0 0 11px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:0 0 auto;min-width:52px;padding:8px 4px;border-radius:13px;border:1px solid var(--line);
+  background:var(--card);text-align:center;cursor:pointer;line-height:1.25}
+.day b{display:block;font-size:14px;font-weight:600}
+.day small{display:block;font-size:10px;color:var(--tx2);margin-top:1px}
+.day.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.day.on small{color:rgba(255,255,255,.85)}
+.day.today:not(.on) b{color:var(--acc)}
+.day .dot{width:4px;height:4px;border-radius:50%;background:var(--acc);margin:3px auto 0}
+.day.on .dot{background:#fff}
+.day .dot.off{opacity:0}
+
+#wbar{display:flex;align-items:center;gap:8px;margin:13px 0 0;font-size:12.5px;color:var(--tx2)}
+#wbar .pill{padding:4px 10px;border-radius:9px;background:var(--card);border:1px solid var(--line);
+  font-weight:650;color:var(--tx)}
+#wbar .pill.other{color:var(--sem);border-color:var(--sem)}
+
+#banner{margin:12px 0 4px;padding:13px 15px;border-radius:15px;background:var(--card);
+  border:1px solid var(--line);display:none}
+#banner.show{display:block}
+#banner .lbl{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--acc);font-weight:700}
+#banner .sub{font-size:13px;color:var(--tx2);margin-top:3px}
+#banner .nm{font-size:16px;font-weight:650;margin-top:5px}
+.bar{height:4px;border-radius:4px;background:var(--card2);margin-top:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:4px}
+
+#list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.card{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:12px 13px;cursor:pointer;position:relative;overflow:hidden}
+.card:active{background:var(--card2)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.card.live{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+.tm{flex:0 0 62px;text-align:center;padding-left:4px}
+.tm .s{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.tm .e{font-size:12px;color:var(--tx2);font-variant-numeric:tabular-nums;margin-top:1px}
+.tm .n{margin-top:6px;font-size:10px;color:var(--tx2);border:1px solid var(--line);
+  border-radius:6px;padding:1px 0}
+.bd{flex:1;min-width:0}
+.bd .t{font-size:15.5px;font-weight:650;line-height:1.3;word-break:break-word}
+.bd .m{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:11px;padding:3px 8px;border-radius:8px;background:var(--c);color:#08101f;font-weight:700}
+html[data-t="light"] .tag{color:#fff}
+.tag.w{background:transparent;border:1px solid var(--sem);color:var(--sem)}
+html[data-t="light"] .tag.w{color:#a16207;border-color:#a16207}
+.mt{font-size:12.5px;color:var(--tx2);display:inline-flex;align-items:center;gap:4px}
+.note{margin-top:6px;font-size:12px;color:var(--tx2);font-style:italic}
+
+.empty{text-align:center;padding:52px 20px;color:var(--tx2)}
+.empty .e1{font-size:40px}
+.empty .e2{margin-top:10px;font-size:14px;line-height:1.5}
+
+.fab{position:fixed;right:16px;bottom:calc(18px + var(--safe));width:58px;height:58px;
+  border-radius:19px;background:var(--acc);color:#fff;border:0;font-size:28px;cursor:pointer;
+  box-shadow:0 10px 26px rgba(76,141,255,.42);z-index:30;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.94)}
+
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;display:none;
+  align-items:flex-end;justify-content:center}
+.scrim.show{display:flex}
+.sheet{background:var(--bg2);width:100%;max-width:720px;border-radius:22px 22px 0 0;
+  max-height:92vh;overflow-y:auto;padding:8px 16px calc(22px + var(--safe));
+  animation:up .22s ease}
+@media(min-width:721px){.scrim{align-items:center}.sheet{border-radius:22px;max-height:88vh}}
+@keyframes up{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+.grab{width:38px;height:4px;border-radius:4px;background:var(--line);margin:6px auto 12px}
+.sheet h2{font-size:17px;margin:0 0 14px}
+label{display:block;font-size:12px;color:var(--tx2);margin:12px 0 6px;font-weight:600}
+input,select,textarea{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line);
+  background:var(--card);color:var(--tx);font-size:16px;font-family:inherit;outline:none}
+input:focus,select:focus{border-color:var(--acc)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;min-width:78px;padding:10px 6px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card);color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--c);border-color:var(--c);color:#08101f}
+html[data-t="light"] .seg button.on{color:#fff}
+.seg.w button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn{width:100%;padding:14px;border-radius:13px;border:0;background:var(--acc);color:#fff;
+  font-size:16px;font-weight:650;cursor:pointer;margin-top:18px}
+.btn.gh{background:var(--card);color:var(--tx);border:1px solid var(--line);margin-top:9px}
+.btn.dg{background:transparent;color:#f87171;border:1px solid rgba(248,113,113,.4);margin-top:9px}
+.mrow{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--line);
+  cursor:pointer;font-size:15px}
+.mrow:last-of-type{border:0}
+.mrow .ic{width:26px;text-align:center;font-size:17px}
+.mrow .sd{margin-left:auto;color:var(--tx2);font-size:12px;text-align:right;max-width:48%}
+.hint{font-size:12px;color:var(--tx2);line-height:1.55;margin-top:14px;padding:12px;
+  background:var(--card);border-radius:12px}
+.copyd{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.copyd button{flex:1;min-width:44px;padding:9px 0;border-radius:10px;border:1px solid var(--line);
+  background:var(--card);color:var(--tx);font-size:13px;font-weight:600;cursor:pointer}
+#fallback{padding:6px 0 30px}
+#fallback h3{font-size:20px;margin:16px 0 4px}
+#fallback h4{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--acc);
+  margin:22px 0 6px}
+#fallback table{width:100%;border-collapse:collapse}
+#fallback td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+#fallback td:first-child{width:96px;white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums}
+#fallback .d{color:var(--tx2);font-size:12.5px;margin-top:3px}
+.sechd{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--tx2);
+  font-weight:700;margin:18px 0 2px;padding-left:4px}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <div class="hd">
+    <h1 id="ttl">Розклад пар</h1>
+    <button class="iconbtn" id="bWeek">Н</button>
+    <button class="iconbtn big" id="bMenu">☰</button>
+  </div>
+  <div class="days" id="days"></div>
+ </div>
+</header>
+
+<div class="wrap">
+  <div id="wbar"></div>
+  <div id="banner"></div>
+  <div id="list"></div>
+  <div id="fallback"><h3>241-1</h3><h4>Понеділок</h4><table><tr><td>11:30<br>12:50</td><td><b>Програмування мовою Java</b><div class="d">Практика · 8-216 · Лазорик В.В.</div></td></tr><tr><td>13:00<br>14:20</td><td><b>Іноземна мова (за проф. спрямуванням)</b><div class="d">Практика · 8-120 · Кшевецький В.С.</div></td></tr><tr><td>14:40<br>16:00</td><td><b>Веб програмування</b><div class="d">Лекція · 8-221 · Лазорик В.В.</div></td></tr><tr><td>16:10<br>17:30</td><td><b>Програмування мовою Java</b><div class="d">Лекція · 8-221 · Лазорик В.В.</div></td></tr></table><h4>Вівторок</h4><table><tr><td>09:50<br>11:10</td><td><b>Ймовірнісні моделі та алгоритми</b><div class="d">Лекція · 8-221 · Антонюк С.В.</div></td></tr><tr><td>11:30<br>12:50</td><td><b>Веб програмування</b><div class="d">Практика · 8-216 · Нестеренко В.В.</div></td></tr><tr><td>13:00<br>14:20</td><td><b>Теорія прийняття рішень</b><div class="d">Лекція · 8-221 · Руснак М.А.</div></td></tr></table><h4>Середа</h4><table><tr><td>09:50<br>11:10</td><td><b>Сучасні парадигми програмування мовою Python</b><div class="d">Практика · 8-216 · Кириченко Є.О.</div></td></tr><tr><td>11:30<br>12:50</td><td><b>Сучасні парадигми програмування мовою Python</b><div class="d">Лекція · 8-221 · Кириченко Є.О.</div></td></tr><tr><td>13:00<br>14:20</td><td><b>Теорія прийняття рішень</b><div class="d">Практика · 8-211 · Руснак М.А.</div></td></tr></table><h4>Четвер</h4><table><tr><td>08:20<br>09:40</td><td><b>Організація баз даних та знань</b><div class="d">Практика · 8-213 · Кириченко Є.О.</div></td></tr><tr><td>09:50<br>11:10</td><td><b>Організація баз даних та знань</b><div class="d">Лекція · 8-221 · Кириченко О.О.</div></td></tr><tr><td>11:30<br>12:50</td><td><b>Ймовірнісні моделі та алгоритми</b><div class="d">Практика · 8-212 · Антонюк С.В.</div></td></tr></table><h4>П'ятниця</h4><table><tr><td>08:20<br>09:40</td><td><b>Основи національного спротиву (для хлопців)</b><div class="d">Практика · військова кафедра · лише 2-й тиждень</div></td></tr><tr><td>09:50<br>11:10</td><td><b>Основи національного спротиву (для хлопців)</b><div class="d">Практика · військова кафедра · лише 2-й тиждень</div></td></tr><tr><td>11:30<br>12:50</td><td><b>Основи національного спротиву (для хлопців)</b><div class="d">Практика · військова кафедра · лише 2-й тиждень</div></td></tr></table></div>
+</div>
+
+<button class="fab" id="bAdd">+</button>
+
+<!-- редактор пари -->
+<div class="scrim" id="scEdit"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="edTitle">Нова пара</h2>
+
+  <label>Предмет</label>
+  <input id="fSubj" placeholder="Напр. Вища математика" autocomplete="off">
+
+  <label>Тип заняття</label>
+  <div class="seg" id="fType"></div>
+
+  <label>Викладач</label>
+  <input id="fTeacher" placeholder="Прізвище І. Б." autocomplete="off">
+
+  <div class="row">
+    <div><label>Кабінет</label><input id="fRoom" placeholder="Напр. 305" autocomplete="off"></div>
+    <div><label>№ пари</label><select id="fNum"></select></div>
+  </div>
+
+  <div class="row">
+    <div><label>Початок</label><input id="fStart" type="time"></div>
+    <div><label>Кінець</label><input id="fEnd" type="time"></div>
+  </div>
+
+  <label>Коли буває</label>
+  <div class="seg w" id="fWeek">
+    <button data-k="all">Щотижня</button>
+    <button data-k="odd">1-й (непарний)</button>
+    <button data-k="even">2-й (парний)</button>
+  </div>
+
+  <label>Нотатка (необов'язково)</label>
+  <input id="fNote" placeholder="Напр. взяти зошит" autocomplete="off">
+
+  <button class="btn" id="bSave">Зберегти</button>
+  <button class="btn dg" id="bDel" style="display:none">Видалити пару</button>
+  <button class="btn gh" id="bCancel">Скасувати</button>
+</div></div>
+
+<!-- меню -->
+<div class="scrim" id="scMenu"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Меню</h2>
+
+  <div class="sechd">Тижні</div>
+  <div class="mrow" id="mWeekNow"><span class="ic">🔁</span><span>Цей тиждень</span><span class="sd" id="sdWeekNow"></span></div>
+  <div class="mrow" id="mWeekMode"><span class="ic">⚙️</span><span>Чергування</span><span class="sd" id="sdWeekMode"></span></div>
+
+  <div class="sechd">Розклад</div>
+  <div class="mrow" id="mTitle"><span class="ic">✏️</span><span>Назва / група</span><span class="sd" id="sdTitle"></span></div>
+  <div class="mrow" id="mTheme"><span class="ic">🌗</span><span>Тема</span><span class="sd" id="sdTheme"></span></div>
+  <div class="mrow" id="mSaveHtml"><span class="ic">📤</span><span>Зберегти файл з розкладом</span><span class="sd">для Telegram</span></div>
+  <div class="mrow" id="mExport"><span class="ic">💾</span><span>Експорт даних (.json)</span></div>
+  <div class="mrow" id="mImport"><span class="ic">📥</span><span>Імпорт даних (.json)</span></div>
+  <div class="mrow" id="mClear"><span class="ic">🗑</span><span>Очистити весь розклад</span></div>
+
+  <div style="padding:16px 4px 0">
+    <div style="font-size:12px;color:var(--tx2);font-weight:600">Копіювати поточний день у:</div>
+    <div class="copyd" id="copyD"></div>
+  </div>
+
+  <div class="hint">
+    <b>1-й / 2-й тиждень.</b> У пари обираєш «Щотижня», «1-й (непарний)» або «2-й (парний)».
+    Показуються лише ті пари, що є цього тижня. Застосунок сам чергує тижні за календарем —
+    раз налаштуй у «Цей тиждень», далі перемикається автоматично.
+    Кнопка <b>1-й/2-й тиждень</b> угорі показує інший тиждень для перегляду.<br><br>
+    <b>Як перекинути на телефон:</b><br>
+    1. «Зберегти файл з розкладом» → отримаєш <b>rozklad.html</b> з усіма парами всередині.<br>
+    2. Надішли цей файл собі в Telegram (Збережене).<br>
+    3. На телефоні відкрий файл → «Відкрити в браузері». Інтернет не потрібен.<br>
+    4. Android: у Chrome «Додати на головний екран». iPhone: збережи у «Файли», відкрий у Safari.
+  </div>
+  <button class="btn gh" id="bCloseMenu">Закрити</button>
+</div></div>
+
+<input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+
+<script>
+(function(){
+"use strict";
+
+var DAYS=["Понеділок","Вівторок","Середа","Четвер","П'ятниця"];
+var SHORT=["Пн","Вт","Ср","Чт","Пт"];
+var ND=5;
+var TYPES=[
+ {k:"lek",n:"Лекція",     s:"Лек", c:"var(--lek)"},
+ {k:"pra",n:"Практика",   s:"Прак",c:"var(--pra)"},
+ {k:"lab",n:"Лабораторна",s:"Лаб", c:"var(--lab)"},
+ {k:"sem",n:"Семінар",    s:"Сем", c:"var(--sem)"},
+ {k:"con",n:"Консультація",s:"Конс",c:"var(--con)"}
+];
+/* сітка ЧНУ: пари по 80 хв; після 2-ї та 4-ї перерва 20 хв, решта — 10 хв */
+var TIMES=[["08:20","09:40"],["09:50","11:10"],["11:30","12:50"],["13:00","14:20"],
+           ["14:40","16:00"],["16:10","17:30"],["17:40","19:00"]];
+var KEY="rozklad_v1", SEEDKEY="rozklad_seed";
+
+/* ---- індекс тижня: скільки понеділків минуло з 05.01.1970 ---- */
+function weekIndex(d){
+  var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  x.setDate(x.getDate()-((x.getDay()+6)%7));            // понеділок цього тижня
+  return Math.round(Date.UTC(x.getFullYear(),x.getMonth(),x.getDate())/604800000);
+}
+function blank(){
+  return {v:2,savedAt:0,title:"Розклад пар",theme:"dark",
+    weekMode:"auto",                 // auto = чергується сам, manual = стоїть на місці
+    anchorWeek:weekIndex(new Date()),// тиждень-орієнтир
+    anchorType:"odd",                // яким він є
+    days:[[],[],[],[],[]]};
+}
+function load(){
+  var seed=null,loc=null;
+  try{var s=document.getElementById("seed").textContent.trim();if(s&&s!=="null")seed=JSON.parse(s);}catch(e){}
+  try{var l=localStorage.getItem(KEY);if(l)loc=JSON.parse(l);}catch(e){}
+  var st=null;
+  /* свіжодоставлений файл (новий seedId) застосовується один раз безумовно */
+  if(seed&&seed.seedId){
+    var last=null;try{last=localStorage.getItem(SEEDKEY);}catch(e){}
+    if(last!==seed.seedId){st=seed;try{localStorage.setItem(SEEDKEY,seed.seedId);}catch(e){}}
+  }
+  if(!st){
+    if(seed&&loc) st=(loc.savedAt||0)>=(seed.savedAt||0)?loc:seed;
+    else st=loc||seed||blank();
+  }
+  var b=blank();for(var k in b){if(st[k]===undefined)st[k]=b[k];}
+  if(!Array.isArray(st.days))st.days=[];
+  st.days=st.days.slice(0,ND);
+  while(st.days.length<ND)st.days.push([]);
+  for(var q=0;q<ND;q++)if(!Array.isArray(st.days[q]))st.days[q]=[];
+  /* сумісність зі старими ключами */
+  for(var d=0;d<ND;d++)for(var i=0;i<st.days[d].length;i++){
+    var w=st.days[d][i].week;
+    if(w==="num")st.days[d][i].week="odd";
+    if(w==="den")st.days[d][i].week="even";
+  }
+  return st;
+}
+var S=load();
+function dow(){return (new Date().getDay()+6)%7;}   // 0=Пн … 6=Нд
+var today=dow();                                     // 5/6 = вихідні
+var cur=today<ND?today:0;
+var editIdx=-1, curType="lek", curWeekSel="all";
+var view=null;            // який тиждень зараз дивимось (null = поточний)
+
+function save(){S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function other(w){return w==="odd"?"even":"odd";}
+function wShort(w){return w==="odd"?"1-й":"2-й";}
+function wName(w){return w==="odd"?"1-й (непарний)":"2-й (парний)";}
+function wFull(w){return wShort(w)+" тиждень · "+(w==="odd"?"непарний":"парний");}
+function plural(n){
+  var a=n%10,b=n%100;
+  if(a===1&&b!==11)return n+" пара";
+  if(a>=2&&a<=4&&(b<12||b>14))return n+" пари";
+  return n+" пар";
+}
+function nowWeek(){
+  if(S.weekMode!=="auto")return S.anchorType;
+  var diff=weekIndex(new Date())-S.anchorWeek;
+  return (((diff%2)+2)%2)===0?S.anchorType:other(S.anchorType);
+}
+function viewWeek(){return view||nowWeek();}
+
+function T(k){for(var i=0;i<TYPES.length;i++)if(TYPES[i].k===k)return TYPES[i];return TYPES[0];}
+function mins(t){if(!t)return 0;var p=t.split(":");return (+p[0])*60+(+p[1]);}
+function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function inWeek(p,w){return !p.week||p.week==="all"||p.week===w;}
+function dayList(d,w){
+  return S.days[d].filter(function(p){return inWeek(p,w);})
+    .sort(function(a,b){return mins(a.start)-mins(b.start);});
+}
+
+/* ---------- рендер ---------- */
+function renderWeekBar(){
+  var W=document.getElementById("wbar"),v=viewWeek(),n=nowWeek();
+  var b=document.getElementById("bWeek");
+  b.textContent=wShort(v)+" тиждень";
+  b.className="iconbtn"+(v!==n?" alt":"");
+  W.innerHTML='<span class="pill'+(v!==n?" other":"")+'">'+wFull(v)+'</span>'+
+    '<span>'+(v===n?"поточний":"перегляд — торкнись «"+wShort(n)+"», щоб повернутись")+'</span>';
+}
+function renderDays(){
+  var h="",w=viewWeek();
+  for(var i=0;i<ND;i++){
+    var cnt=dayList(i,w).length;
+    h+='<div class="day'+(i===cur?" on":"")+(i===today?" today":"")+
+       '" data-d="'+i+'"><b>'+SHORT[i]+'</b><small>'+(cnt?plural(cnt):"—")+
+       '</small><div class="dot'+(cnt?"":" off")+'"></div></div>';
+  }
+  document.getElementById("days").innerHTML=h;
+}
+function renderList(){
+  var w=viewWeek(),arr=dayList(cur,w),L=document.getElementById("list");
+  if(!arr.length){
+    var otherCnt=dayList(cur,other(w)).length;
+    L.innerHTML='<div class="empty"><div class="e1">🌤</div><div class="e2"><b>'+DAYS[cur]+
+      '</b> · '+wShort(w)+' тиждень<br>Пар немає.'+
+      (otherCnt?' Але на '+wShort(other(w))+' тижні їх '+plural(otherCnt)+'.':' Натисни «+», щоб додати.')+
+      '</div></div>';
+    return;
+  }
+  var now=new Date(),nm=now.getHours()*60+now.getMinutes();
+  var isToday=cur===today&&today<ND&&w===nowWeek();
+  var h="";
+  for(var i=0;i<arr.length;i++){
+    var p=arr[i],t=T(p.type);
+    var live=isToday&&nm>=mins(p.start)&&nm<mins(p.end);
+    h+='<div class="card'+(live?" live":"")+'" style="--c:'+t.c+'" data-id="'+esc(p.id)+'">'+
+       '<div class="tm"><div class="s">'+esc(p.start)+'</div><div class="e">'+esc(p.end)+
+       '</div><div class="n">'+(p.num||"·")+' пара</div></div>'+
+       '<div class="bd"><div class="t">'+esc(p.subj||"Без назви")+'</div><div class="m">'+
+       '<span class="tag">'+t.s+'</span>'+
+       (p.week&&p.week!=="all"?'<span class="tag w">'+wShort(p.week)+' тиждень</span>':"")+
+       (p.room?'<span class="mt">📍 '+esc(p.room)+'</span>':"")+
+       (p.teacher?'<span class="mt">👤 '+esc(p.teacher)+'</span>':"")+
+       '</div>'+(p.note?'<div class="note">'+esc(p.note)+'</div>':"")+'</div></div>';
+  }
+  L.innerHTML=h;
+}
+function renderBanner(){
+  var B=document.getElementById("banner");
+  var w=viewWeek(),nowW=(w===nowWeek());
+  var now=new Date(),nm=now.getHours()*60+now.getMinutes();
+
+  if(today>=ND&&nowW&&cur===0){                    // субота / неділя, дивимось понеділок
+    var mw=(S.weekMode==="auto")?other(nowWeek()):nowWeek();
+    var ma=dayList(0,mw);
+    B.innerHTML='<div class="lbl">Вихідні</div><div class="sub" style="margin-top:5px">'+
+      (ma.length?'Понеділок ('+wShort(mw)+' тиждень) — '+plural(ma.length)+', перша о '+esc(ma[0].start):
+                 'У понеділок пар немає')+'</div>';
+    B.className="show";return;
+  }
+  if(!(nowW&&cur===today&&today<ND)){              // не сьогодні — просто підсумок дня
+    var da=dayList(cur,w);
+    if(!da.length){B.className="";B.innerHTML="";return;}
+    B.innerHTML='<div class="lbl">'+DAYS[cur]+' · '+wShort(w)+' тиждень</div>'+
+      '<div class="sub" style="margin-top:5px">'+plural(da.length)+' · '+
+      esc(da[0].start)+'–'+esc(da[da.length-1].end)+'</div>';
+    B.className="show";return;
+  }
+
+  var arr=dayList(today,nowWeek());
+  if(!arr.length){B.className="";B.innerHTML="";return;}
+  var curP=null,nextP=null;
+  for(var i=0;i<arr.length;i++){
+    if(nm>=mins(arr[i].start)&&nm<mins(arr[i].end)){curP=arr[i];break;}
+    if(mins(arr[i].start)>nm){nextP=arr[i];break;}
+  }
+  function line(p){return esc(p.subj||"Без назви")+" · "+T(p.type).n+(p.room?" · ауд. "+esc(p.room):"");}
+  function hm(m){var h=Math.floor(m/60),mm=m%60;return (h?h+" год ":"")+mm+" хв";}
+  if(curP){
+    var left=mins(curP.end)-nm,tot=mins(curP.end)-mins(curP.start);
+    B.innerHTML='<div class="lbl">Зараз іде</div><div class="nm">'+line(curP)+
+      '</div><div class="sub">До кінця '+hm(left)+' · до '+esc(curP.end)+
+      (curP.teacher?' · '+esc(curP.teacher):"")+'</div>'+
+      '<div class="bar"><i style="width:'+Math.round((1-left/tot)*100)+'%"></i></div>';
+  }else if(nextP){
+    B.innerHTML='<div class="lbl">Наступна пара</div><div class="nm">'+line(nextP)+
+      '</div><div class="sub">Початок о '+esc(nextP.start)+' · через '+hm(mins(nextP.start)-nm)+'</div>';
+  }else{
+    B.innerHTML='<div class="lbl">Сьогодні все</div><div class="sub" style="margin-top:5px">Пари на сьогодні закінчились 🎉</div>';
+  }
+  B.className="show";
+}
+function render(){
+  document.documentElement.setAttribute("data-t",S.theme);
+  document.getElementById("ttl").textContent=S.title||"Розклад пар";
+  document.getElementById("sdTheme").textContent=S.theme==="dark"?"Темна":"Світла";
+  document.getElementById("sdTitle").textContent=S.title||"";
+  document.getElementById("sdWeekNow").textContent=wFull(nowWeek())+" — змінити";
+  document.getElementById("sdWeekMode").textContent=S.weekMode==="auto"?"авто, за календарем":"вручну";
+  var fb=document.getElementById("fallback");if(fb)fb.style.display="none";
+  renderWeekBar();renderDays();renderBanner();renderList();
+}
+
+/* ---------- статична версія (якщо скрипти не запустились) ---------- */
+function fallbackHtml(){
+  var h='<h3>'+esc(S.title||"Розклад пар")+'</h3>';
+  for(var d=0;d<ND;d++){
+    var a=S.days[d].slice().sort(function(x,y){return mins(x.start)-mins(y.start);});
+    if(!a.length)continue;
+    h+='<h4>'+DAYS[d]+'</h4><table>';
+    for(var i=0;i<a.length;i++){
+      var p=a[i];
+      h+='<tr><td>'+esc(p.start)+'<br>'+esc(p.end)+'</td><td><b>'+esc(p.subj)+'</b><div class="d">'+
+        T(p.type).n+(p.room?' · '+esc(p.room):'')+(p.teacher?' · '+esc(p.teacher):'')+
+        (p.week&&p.week!=="all"?' · лише '+wShort(p.week)+' тиждень':'')+'</div></td></tr>';
+    }
+    h+='</table>';
+  }
+  return h;
+}
+
+/* ---------- редактор ---------- */
+function segs(){
+  var h="";
+  for(var i=0;i<TYPES.length;i++)
+    h+='<button data-k="'+TYPES[i].k+'" style="--c:'+TYPES[i].c+'"'+
+       (TYPES[i].k===curType?' class="on"':"")+'>'+TYPES[i].n+'</button>';
+  document.getElementById("fType").innerHTML=h;
+  var bs=document.getElementById("fWeek").children;
+  for(var j=0;j<bs.length;j++)bs[j].className=(bs[j].dataset.k===curWeekSel?"on":"");
+}
+function openEdit(id){
+  var p=null;
+  if(id){for(var i=0;i<S.days[cur].length;i++)if(S.days[cur][i].id===id)p=S.days[cur][i];}
+  editIdx=p?S.days[cur].indexOf(p):-1;
+  var n=p?p.num:Math.min(dayList(cur,viewWeek()).length+1,TIMES.length);
+  var tt=TIMES[n-1]||TIMES[0];
+  document.getElementById("edTitle").textContent=p?"Редагувати пару":"Нова пара · "+DAYS[cur];
+  document.getElementById("fSubj").value=p?p.subj||"":"";
+  document.getElementById("fTeacher").value=p?p.teacher||"":"";
+  document.getElementById("fRoom").value=p?p.room||"":"";
+  document.getElementById("fNum").value=String(n);
+  document.getElementById("fStart").value=p?p.start:tt[0];
+  document.getElementById("fEnd").value=p?p.end:tt[1];
+  document.getElementById("fNote").value=p?p.note||"":"";
+  curType=p?p.type:"lek";
+  curWeekSel=p?(p.week||"all"):"all";
+  segs();
+  document.getElementById("bDel").style.display=p?"block":"none";
+  document.getElementById("scEdit").className="scrim show";
+}
+function closeEdit(){document.getElementById("scEdit").className="scrim";}
+function doSave(){
+  var n=+document.getElementById("fNum").value;
+  var p={id:(editIdx>=0?S.days[cur][editIdx].id:"p"+Date.now()+Math.random().toString(36).slice(2,6)),
+    num:n,type:curType,week:curWeekSel,
+    subj:document.getElementById("fSubj").value.trim(),
+    teacher:document.getElementById("fTeacher").value.trim(),
+    room:document.getElementById("fRoom").value.trim(),
+    start:document.getElementById("fStart").value||TIMES[n-1][0],
+    end:document.getElementById("fEnd").value||TIMES[n-1][1],
+    note:document.getElementById("fNote").value.trim()};
+  if(!p.subj){document.getElementById("fSubj").focus();return;}
+  if(editIdx>=0)S.days[cur][editIdx]=p;else S.days[cur].push(p);
+  save();closeEdit();render();
+}
+
+/* ---------- файли ---------- */
+function dl(blob,name){
+  var u=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},400);
+}
+function saveHtml(){
+  save();
+  var c=document.documentElement.cloneNode(true);
+  var out=JSON.parse(JSON.stringify(S));
+  out.seedId="e"+Date.now()+Math.random().toString(36).slice(2,6);  // щоб файл застосувався на новому пристрої
+  c.querySelector("#seed").textContent=JSON.stringify(out);
+  ["#list","#banner","#days","#fType","#copyD","#wbar"].forEach(function(s){
+    var e=c.querySelector(s);if(e)e.innerHTML="";});
+  var fbc=c.querySelector("#fallback");
+  if(fbc){fbc.removeAttribute("style");fbc.innerHTML=fallbackHtml();}
+  ["#scEdit","#scMenu"].forEach(function(s){
+    var e=c.querySelector(s);if(e)e.className="scrim";});
+  c.setAttribute("data-t",S.theme);
+  dl(new Blob(["<!doctype html>\n"+c.outerHTML],{type:"text/html;charset=utf-8"}),"rozklad.html");
+}
+
+/* ---------- події ---------- */
+document.getElementById("days").addEventListener("click",function(e){
+  var d=e.target.closest(".day");if(!d)return;cur=+d.dataset.d;render();});
+document.getElementById("list").addEventListener("click",function(e){
+  var c=e.target.closest(".card");if(!c)return;openEdit(c.dataset.id);});
+document.getElementById("bAdd").onclick=function(){openEdit(null);};
+document.getElementById("bCancel").onclick=closeEdit;
+document.getElementById("bSave").onclick=doSave;
+document.getElementById("bDel").onclick=function(){
+  if(editIdx<0)return;
+  if(confirm("Видалити цю пару?")){S.days[cur].splice(editIdx,1);save();closeEdit();render();}};
+document.getElementById("fType").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;curType=b.dataset.k;segs();});
+document.getElementById("fWeek").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;curWeekSel=b.dataset.k;segs();});
+document.getElementById("fNum").addEventListener("change",function(){
+  var t=TIMES[+this.value-1];if(!t)return;
+  document.getElementById("fStart").value=t[0];document.getElementById("fEnd").value=t[1];});
+
+/* перемикач перегляду тижня */
+document.getElementById("bWeek").onclick=function(){
+  view=(viewWeek()===nowWeek())?other(nowWeek()):null;render();};
+
+document.getElementById("bMenu").onclick=function(){
+  var h="";for(var i=0;i<ND;i++)h+='<button data-d="'+i+'"'+(i===cur?' disabled style="opacity:.35"':"")+'>'+SHORT[i]+'</button>';
+  document.getElementById("copyD").innerHTML=h;
+  document.getElementById("scMenu").className="scrim show";};
+document.getElementById("bCloseMenu").onclick=function(){document.getElementById("scMenu").className="scrim";};
+
+/* цей тиждень насправді інший — перекалібрувати */
+document.getElementById("mWeekNow").onclick=function(){
+  S.anchorWeek=weekIndex(new Date());
+  S.anchorType=other(nowWeek());
+  view=null;save();render();};
+document.getElementById("mWeekMode").onclick=function(){
+  if(S.weekMode==="auto"){S.anchorType=nowWeek();S.weekMode="manual";}
+  else{S.anchorWeek=weekIndex(new Date());S.weekMode="auto";}
+  view=null;save();render();};
+
+document.getElementById("mTheme").onclick=function(){
+  S.theme=S.theme==="dark"?"light":"dark";save();render();};
+document.getElementById("mTitle").onclick=function(){
+  var t=prompt("Назва (напр. «КН-21, 3 курс»):",S.title||"");
+  if(t!==null){S.title=t.trim()||"Розклад пар";save();render();}};
+document.getElementById("mSaveHtml").onclick=saveHtml;
+document.getElementById("mExport").onclick=function(){
+  save();dl(new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),"rozklad.json");};
+document.getElementById("mImport").onclick=function(){document.getElementById("fileIn").click();};
+document.getElementById("fileIn").onchange=function(){
+  var f=this.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){try{
+    var d=JSON.parse(r.result);if(!d.days)throw 0;
+    var el=document.getElementById("seed");el.textContent=JSON.stringify(d);
+    S=load();save();document.getElementById("scMenu").className="scrim";view=null;render();
+  }catch(e){alert("Не вдалося прочитати файл.");}};
+  r.readAsText(f);this.value="";};
+document.getElementById("mClear").onclick=function(){
+  if(confirm("Видалити ВСІ пари в усіх днях?")){S.days=[[],[],[],[],[]];save();render();}};
+document.getElementById("copyD").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b||b.disabled)return;
+  var d=+b.dataset.d;
+  if(S.days[d].length&&!confirm(SHORT[d]+" вже має пари. Замінити їх?"))return;
+  S.days[d]=S.days[cur].map(function(p){
+    var q=JSON.parse(JSON.stringify(p));
+    q.id="p"+Date.now()+Math.random().toString(36).slice(2,6);return q;});
+  save();render();b.textContent="✓";});
+[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}]]
+  .forEach(function(x){document.getElementById(x[0]).addEventListener("click",function(e){
+    if(e.target===this)x[1]();});});
+
+/* init */
+(function(){var h="";for(var i=1;i<=TIMES.length;i++)h+='<option value="'+i+'">'+i+'</option>';
+ document.getElementById("fNum").innerHTML=h;})();
+render();
+
+/* офлайн-режим: працює лише коли сторінка відкрита як сайт (http/https) */
+if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+  navigator.serviceWorker.register("sw.js").catch(function(){});
+}
+
+setInterval(function(){today=dow();renderBanner();renderList();},30000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden){renderBanner();renderList();}});
+})();
+</script>
+</body>
+</html>
