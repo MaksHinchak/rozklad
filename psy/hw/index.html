@@ -55,6 +55,9 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);
 .chip.on .cn{color:rgba(255,255,255,.85)}
 .chip.on .cd{background:#fff}
 
+#sbar{display:none;align-items:center;gap:6px;margin:12px 0 0;font-size:12.5px;color:var(--tx2)}
+#sbar.show{display:flex}
+#sbar.bad{color:var(--bad);font-weight:600}
 #banner{margin:12px 0 4px;padding:13px 15px;border-radius:15px;background:var(--card);
   border:1px solid var(--line);display:none}
 #banner.show{display:block}
@@ -151,6 +154,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
 </header>
 
 <div class="wrap">
+  <div id="sbar"></div>
   <div id="banner"></div>
   <div id="list"></div>
   <div id="fallback"></div>
@@ -196,6 +200,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
   <div class="mrow" id="mSubj"><span class="ic">📚</span><span>Свої предмети</span><span class="sd" id="sdSubj"></span></div>
 
   <div class="sechd">Дані</div>
+  <div class="mrow" id="mSync"><span class="ic">☁️</span><span>Синхронізація</span><span class="sd" id="sdSync"></span></div>
   <div class="mrow" id="mSaveHtml"><span class="ic">📤</span><span>Зберегти файл з домашками</span><span class="sd">для Telegram</span></div>
   <div class="mrow" id="mExport"><span class="ic">💾</span><span>Експорт даних (.json)</span></div>
   <div class="mrow" id="mImport"><span class="ic">📥</span><span>Імпорт даних (.json)</span></div>
@@ -208,10 +213,37 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
     Звідти воно зникає само через <b id="hKeep">3 дні</b> (термін можна змінити тут же, в меню).<br><br>
     Предмети підтягуються з розкладу самі. Свій власний можна додати
     просто в списку предметів — пункт «➕ Інший предмет…».<br><br>
-    Дані лежать у цьому браузері. Щоб перенести на інший пристрій —
-    «Зберегти файл з домашками» і відкрити той файл там.
+    Щоб домашки були і на ПК, і на телефоні — увімкни «Синхронізацію» в меню
+    і встав той самий токен на обох пристроях. Без неї дані лежать лише
+    в цьому браузері.
   </div>
   <button class="btn gh" id="bCloseMenu">Закрити</button>
+</div></div>
+
+<!-- синхронізація -->
+<div class="scrim" id="scSync"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Синхронізація між пристроями</h2>
+
+  <div class="hint" style="margin-top:0">
+    Домашки складаються в <b>приватний gist</b> твого GitHub і тягнуться звідти на
+    кожен пристрій, де вставлений цей самий токен. Токен зберігається лише в цьому
+    браузері — ані в сайт, ані в репозиторій він не потрапляє.<br><br>
+    <b>Де взяти:</b> відкрий
+    <a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=Domashki" target="_blank" rel="noopener" style="color:var(--acc)">github.com → новий токен</a>
+    (права вже виставлені — тільки gists, більше нічого),
+    у полі <b>Expiration</b> обери <b>No expiration</b>, інакше синхронізація одного дня
+    просто перестане працювати. Унизу <b>Generate token</b> — і скопіюй рядок,
+    що починається з ghp_.
+  </div>
+
+  <label>Токен</label>
+  <input id="sTok" type="password" autocomplete="off" placeholder="ghp_…">
+
+  <button class="btn" id="sOn">Увімкнути</button>
+  <button class="btn gh" id="sNow" style="display:none">Синхронізувати зараз</button>
+  <button class="btn dg" id="sOff" style="display:none">Вимкнути і забути токен</button>
+  <button class="btn gh" id="sCancel">Закрити</button>
 </div></div>
 
 <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
@@ -265,7 +297,11 @@ function load(){
 var S=load();
 var editId=null, curSubjSel="", curFilter="", quickSel=null;
 
-function save(){S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function save(){
+  S.savedAt=Date.now();
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  schedulePush();
+}
 function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
 function nTask(n){
@@ -341,21 +377,31 @@ function subjects(){
   if(!src.length)src=BASE;
   for(i=0;i<src.length;i++)if(out.indexOf(src[i])<0)out.push(src[i]);
   for(i=0;i<S.subjects.length;i++)if(out.indexOf(S.subjects[i])<0)out.push(S.subjects[i]);
-  for(i=0;i<S.items.length;i++){
-    var s=S.items[i].subj;
+  var L=items();
+  for(i=0;i<L.length;i++){
+    var s=L[i].subj;
     if(s&&out.indexOf(s)<0)out.push(s);
   }
   return out;
 }
 
+/* Видалене не зникає одразу, а лишається міткою {del:1} — інакше інший
+   пристрій під час синхронізації принесе його назад. Мітки живуть 30 днів. */
+function alive(x){return !x.del;}
+function items(){return S.items.filter(alive);}
+function kill(it){
+  return {id:it.id,del:1,upd:Date.now(),created:it.created||0};
+}
+
 /* ---------- виконане само зникає ---------- */
 function purge(){
-  var lim=(+S.keep||3)*DAY, now=Date.now(), n=S.items.length;
-  S.items=S.items.filter(function(it){
-    if(!it.done)return true;
-    return (now-(it.doneAt||now))<lim;
-  });
-  if(S.items.length!==n)save();
+  var lim=(+S.keep||3)*DAY, now=Date.now(), ch=false;
+  for(var i=0;i<S.items.length;i++){
+    var it=S.items[i];
+    if(it.del||!it.done)continue;
+    if((now-(it.doneAt||now))>=lim){S.items[i]=kill(it);ch=true;}
+  }
+  if(ch)save();
 }
 function leftDays(it){
   var lim=(+S.keep||3)*DAY;
@@ -372,24 +418,157 @@ function byDue(a,b){
   return (a.created||0)-(b.created||0);
 }
 function active(){
-  return S.items.filter(function(it){return !it.done&&(!curFilter||it.subj===curFilter);}).sort(byDue);
+  return items().filter(function(it){return !it.done&&(!curFilter||it.subj===curFilter);}).sort(byDue);
 }
 function doneList(){
-  return S.items.filter(function(it){return it.done&&(!curFilter||it.subj===curFilter);})
+  return items().filter(function(it){return it.done&&(!curFilter||it.subj===curFilter);})
     .sort(function(a,b){return (b.doneAt||0)-(a.doneAt||0);});
+}
+
+/* ---------- синхронізація через приватний gist ----------
+   Токен лежить лише в localStorage цього браузера — у сайт і в репозиторій
+   він не потрапляє. Права токена — тільки gists.
+   Зливаємо поштучно за міткою часу it.upd, а не «останній переміг»:
+   інакше правка з телефона затерла б те, що записано на ПК. */
+var SYNCTAG="domashki-sync:psy";
+var TKEY="ghtok_v1:"+SYNCTAG, GKEY="ghgist_v1:"+SYNCTAG, GFILE="domashki.json";
+var tok="",gid="",sState="off",sMsg="",sAt=0,sTimer=null,sBusy=false;
+try{tok=localStorage.getItem(TKEY)||"";}catch(e){}
+try{gid=localStorage.getItem(GKEY)||"";}catch(e){}
+function syncAllowed(){return true;}
+function hhmm(t){var d=new Date(t);
+  return ("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);}
+function sSet(st,msg){
+  sState=st;sMsg=msg||"";if(st==="ok")sAt=Date.now();
+  renderSbar();updSyncRow();
+}
+function ghApi(p,opt){
+  opt=opt||{};
+  var h={"Accept":"application/vnd.github+json","Authorization":"Bearer "+tok,
+         "X-GitHub-Api-Version":"2022-11-28"};
+  if(opt.body)h["Content-Type"]="application/json";
+  opt.headers=h;
+  return fetch("https://api.github.com"+p,opt).then(function(r){
+    if(r.status===401)throw new Error("Токен не підходить — перевір або зроби новий.");
+    if(r.status===403)throw new Error("GitHub відмовив: у токена немає права gist.");
+    if(!r.ok)throw new Error("GitHub відповів "+r.status+".");
+    return r.json();
+  });
+}
+function gistFiles(){
+  var f={};f[GFILE]={content:JSON.stringify(S,null,1)};return f;
+}
+function findGist(){
+  if(gid)return Promise.resolve(gid);
+  return ghApi("/gists?per_page=100").then(function(list){
+    for(var i=0;i<list.length;i++)if(list[i].description===SYNCTAG){
+      gid=list[i].id;try{localStorage.setItem(GKEY,gid);}catch(e){}
+      return gid;
+    }
+    return "";
+  });
+}
+function createGist(){
+  return ghApi("/gists",{method:"POST",body:JSON.stringify({
+    description:SYNCTAG,public:false,files:gistFiles()})}).then(function(g){
+    gid=g.id;try{localStorage.setItem(GKEY,gid);}catch(e){}return g;});
+}
+function pullGist(){
+  return ghApi("/gists/"+gid).then(function(g){
+    var f=g.files&&g.files[GFILE];
+    if(!f)return null;
+    if(f.truncated&&f.raw_url)
+      return fetch(f.raw_url).then(function(r){return r.text();})
+             .then(function(t){return JSON.parse(t);});
+    return JSON.parse(f.content);
+  });
+}
+function pushGist(){
+  return ghApi("/gists/"+gid,{method:"PATCH",
+    body:JSON.stringify({description:SYNCTAG,files:gistFiles()})});
+}
+function mergeStates(loc,rem){
+  if(!rem||!rem.items)return null;
+  var out=JSON.parse(JSON.stringify((rem.savedAt||0)>(loc.savedAt||0)?rem:loc));
+  var map={},i,it,k;
+  for(i=0;i<(loc.items||[]).length;i++){it=loc.items[i];map[it.id]=it;}
+  for(i=0;i<(rem.items||[]).length;i++){
+    it=rem.items[i];
+    if(!map[it.id]||(it.upd||0)>(map[it.id].upd||0))map[it.id]=it;
+  }
+  var arr=[],lim=Date.now()-30*DAY;
+  for(k in map)if(map.hasOwnProperty(k)){
+    if(map[k].del&&(map[k].upd||0)<lim)continue;      // стара мітка — можна забути
+    arr.push(map[k]);
+  }
+  arr.sort(function(a,b){return (a.created||0)-(b.created||0);});
+  out.items=arr;
+  var subs=[];
+  [loc.subjects||[],rem.subjects||[]].forEach(function(l){
+    for(var j=0;j<l.length;j++)if(subs.indexOf(l[j])<0)subs.push(l[j]);});
+  out.subjects=subs;
+  out.savedAt=Math.max(loc.savedAt||0,rem.savedAt||0);
+  return out;
+}
+function sameDoc(a,b){
+  return JSON.stringify([a.items,a.subjects,a.title,a.keep])===
+         JSON.stringify([b.items,b.subjects,b.title,b.keep]);
+}
+function syncNow(){
+  if(!tok||sBusy||!syncAllowed())return Promise.resolve();
+  sBusy=true;sSet("busy");
+  /* через Promise.resolve, щоб навіть синхронна помилка потрапила в catch
+     і не лишила синхронізацію назавжди в стані «оновлюю…» */
+  return Promise.resolve().then(findGist).then(function(id){
+    if(!id)return createGist().then(function(){return null;});
+    return pullGist();
+  }).then(function(rem){
+    if(!rem)return null;
+    var m=mergeStates(S,rem);
+    if(!m)return null;
+    S=m;
+    try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+    if(!sameDoc(S,rem))return pushGist();
+    return null;
+  }).then(function(){
+    sBusy=false;sSet("ok");render();
+  }).catch(function(e){
+    sBusy=false;sSet("err",(e&&e.message)||"Не вийшло з'єднатися з GitHub.");render();
+  });
+}
+function schedulePush(){
+  if(!tok||!syncAllowed())return;
+  if(sTimer)clearTimeout(sTimer);
+  sTimer=setTimeout(function(){sTimer=null;syncNow();},1500);
+}
+function renderSbar(){
+  var B=document.getElementById("sbar");if(!B)return;
+  if(!tok||!syncAllowed()){B.className="";B.innerHTML="";return;}
+  B.innerHTML = sState==="busy" ? "\u2601 оновлюю…"
+    : sState==="err" ? "\u26a0 "+esc(sMsg)
+    : sAt ? "\u2601 синхронізовано о "+hhmm(sAt)
+    : "\u2601 синхронізація увімкнена";
+  B.className="show"+(sState==="err"?" bad":"");
+}
+function updSyncRow(){
+  var e=document.getElementById("sdSync");if(!e)return;
+  e.textContent = !tok ? "вимкнена"
+    : sState==="busy" ? "оновлюю…"
+    : sState==="err" ? "помилка"
+    : sAt ? "увімкнена · "+hhmm(sAt) : "увімкнена";
 }
 
 /* ---------- рендер ---------- */
 function renderChips(){
-  var C=document.getElementById("chips"),used=[],i;
-  for(i=0;i<S.items.length;i++)if(used.indexOf(S.items[i].subj)<0)used.push(S.items[i].subj);
+  var C=document.getElementById("chips"),used=[],i,L=items();
+  for(i=0;i<L.length;i++)if(used.indexOf(L[i].subj)<0)used.push(L[i].subj);
   used.sort();
-  var tot=S.items.filter(function(x){return !x.done;}).length;
+  var tot=L.filter(function(x){return !x.done;}).length;
   var h='<div class="chip'+(curFilter?"":" on")+'" data-s=""><span>Усі</span>'+
         (tot?'<span class="cn">'+tot+'</span>':"")+'</div>';
   for(i=0;i<used.length;i++){
     var s=used[i];
-    var c=S.items.filter(function(x){return x.subj===s&&!x.done;}).length;
+    var c=L.filter(function(x){return x.subj===s&&!x.done;}).length;
     h+='<div class="chip'+(curFilter===s?" on":"")+'" data-s="'+esc(s)+'" style="--c:'+colorOf(s)+'">'+
        '<span class="cd"></span><span>'+esc(s)+'</span>'+(c?'<span class="cn">'+c+'</span>':"")+'</div>';
   }
@@ -409,7 +588,7 @@ function itemCard(it){
 function renderList(){
   var L=document.getElementById("list"),a=active(),d=doneList(),h="";
   if(!a.length&&!d.length){
-    L.innerHTML='<div class="empty"><div class="e1">'+(S.items.length?"🔍":"📒")+'</div><div class="e2">'+
+    L.innerHTML='<div class="empty"><div class="e1">'+(items().length?"🔍":"📒")+'</div><div class="e2">'+
       (curFilter?'<b>'+esc(curFilter)+'</b><br>Тут поки порожньо.':
                  'Домашок немає.<br>Натисни «+», щоб записати.')+'</div></div>';
     return;
@@ -427,9 +606,9 @@ function renderList(){
 }
 function renderBanner(){
   var B=document.getElementById("banner");
-  var a=S.items.filter(function(x){return !x.done;}).sort(byDue);
+  var a=items().filter(function(x){return !x.done;}).sort(byDue);
   if(!a.length){
-    if(!S.items.length){B.className="";B.innerHTML="";return;}
+    if(!items().length){B.className="";B.innerHTML="";return;}
     B.innerHTML='<div class="lbl">Чисто</div><div class="sub" style="margin-top:5px">Усі домашки зроблені 🎉</div>';
     B.className="show";return;
   }
@@ -462,13 +641,13 @@ function render(){
   document.getElementById("hKeep").textContent=nDay(+S.keep||3);
   document.getElementById("sdSubj").textContent=subjects().length+" у списку";
   var fb=document.getElementById("fallback");if(fb)fb.style.display="none";
-  renderChips();renderBanner();renderList();
+  renderSbar();updSyncRow();renderChips();renderBanner();renderList();
 }
 
 /* ---------- статична версія (якщо скрипти не запустились) ---------- */
 function fallbackHtml(){
   var h='<h3>'+esc(S.title||"Домашки")+'</h3>';
-  var a=S.items.filter(function(x){return !x.done;}).sort(byDue);
+  var a=items().filter(function(x){return !x.done;}).sort(byDue);
   if(!a.length)return h+'<p>Активних домашок немає.</p>';
   var subs=[],i;
   for(i=0;i<a.length;i++)if(subs.indexOf(a[i].subj)<0)subs.push(a[i].subj);
@@ -505,7 +684,8 @@ function syncQuick(){
   markQuick();
 }
 function find(id){
-  for(var i=0;i<S.items.length;i++)if(S.items[i].id===id)return S.items[i];
+  for(var i=0;i<S.items.length;i++)
+    if(S.items[i].id===id&&!S.items[i].del)return S.items[i];
   return null;
 }
 function openEdit(id){
@@ -529,9 +709,10 @@ function doSave(){
   if(subj===ADD)subj=curSubjSel;
   var due=document.getElementById("fDue").value||"";
   var it=editId?find(editId):null;
-  if(it){it.subj=subj;it.text=txt;it.due=due;}
+  if(it){it.subj=subj;it.text=txt;it.due=due;it.upd=Date.now();}
   else S.items.push({id:"h"+Date.now()+Math.random().toString(36).slice(2,6),
-    subj:subj,text:txt,due:due,done:false,doneAt:0,created:Date.now()});
+    subj:subj,text:txt,due:due,done:false,doneAt:0,
+    created:Date.now(),upd:Date.now()});
   save();closeEdit();render();
 }
 
@@ -565,7 +746,7 @@ document.getElementById("list").addEventListener("click",function(e){
   var t=e.target.closest(".tick");
   if(t){
     var it=find(t.dataset.tick);if(!it)return;
-    it.done=!it.done;it.doneAt=it.done?Date.now():0;
+    it.done=!it.done;it.doneAt=it.done?Date.now():0;it.upd=Date.now();
     save();render();return;
   }
   var c=e.target.closest(".card");if(!c)return;openEdit(c.dataset.id);});
@@ -575,7 +756,8 @@ document.getElementById("bSave").onclick=doSave;
 document.getElementById("bDel").onclick=function(){
   if(!editId)return;
   if(confirm("Видалити цю домашку?")){
-    S.items=S.items.filter(function(x){return x.id!==editId;});
+    for(var i=0;i<S.items.length;i++)
+      if(S.items[i].id===editId)S.items[i]=kill(S.items[i]);
     save();closeEdit();render();}};
 document.getElementById("fSubj").onchange=function(){
   if(this.value===ADD){
@@ -617,6 +799,30 @@ document.getElementById("mSubj").onclick=function(){
   if(t===null)return;
   S.subjects=t.split("\n").map(function(x){return x.trim();}).filter(function(x){return !!x;});
   save();render();};
+function closeSync(){document.getElementById("scSync").className="scrim";}
+document.getElementById("mSync").onclick=function(){
+  document.getElementById("sTok").value="";
+  document.getElementById("sNow").style.display=tok?"block":"none";
+  document.getElementById("sOff").style.display=tok?"block":"none";
+  document.getElementById("sOn").textContent=tok?"Замінити токен":"Увімкнути";
+  document.getElementById("scSync").className="scrim show";
+};
+document.getElementById("sOn").onclick=function(){
+  var v=document.getElementById("sTok").value.trim();
+  if(!v){document.getElementById("sTok").focus();return;}
+  tok=v;gid="";
+  try{localStorage.setItem(TKEY,tok);localStorage.removeItem(GKEY);}catch(e){}
+  closeSync();document.getElementById("scMenu").className="scrim";
+  syncNow();
+};
+document.getElementById("sNow").onclick=function(){
+  closeSync();document.getElementById("scMenu").className="scrim";syncNow();};
+document.getElementById("sOff").onclick=function(){
+  if(!confirm("Вимкнути синхронізацію і забути токен на цьому пристрої? Домашки лишаться і тут, і в gist."))return;
+  tok="";gid="";
+  try{localStorage.removeItem(TKEY);localStorage.removeItem(GKEY);}catch(e){}
+  sSet("off");closeSync();render();};
+document.getElementById("sCancel").onclick=closeSync;
 document.getElementById("mSaveHtml").onclick=saveHtml;
 document.getElementById("mExport").onclick=function(){
   save();dl(new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),"domashki.json");};
@@ -630,19 +836,27 @@ document.getElementById("fileIn").onchange=function(){
   }catch(e){alert("Не вдалося прочитати файл.");}};
   r.readAsText(f);this.value="";};
 document.getElementById("mClearDone").onclick=function(){
-  var n=S.items.filter(function(x){return x.done;}).length;
+  var n=items().filter(function(x){return x.done;}).length;
   if(!n){alert("Виконаних домашок немає.");return;}
   if(confirm("Прибрати "+nTask(n)+" з розділу «Виконані»?")){
-    S.items=S.items.filter(function(x){return !x.done;});save();render();}};
+    for(var i=0;i<S.items.length;i++)
+      if(!S.items[i].del&&S.items[i].done)S.items[i]=kill(S.items[i]);
+    save();render();}};
 document.getElementById("mClear").onclick=function(){
-  if(confirm("Видалити ВСІ домашки?")){S.items=[];save();render();}};
+  if(confirm("Видалити ВСІ домашки?")){
+    for(var i=0;i<S.items.length;i++)
+      if(!S.items[i].del)S.items[i]=kill(S.items[i]);
+    save();render();}};
 
-[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}]]
+[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}],
+ ["scSync",closeSync]]
   .forEach(function(x){document.getElementById(x[0]).addEventListener("click",function(e){
     if(e.target===this)x[1]();});});
 
 /* init */
 render();
+if(tok)syncNow();
+setInterval(function(){if(tok)syncNow();},120000);
 
 /* офлайн-режим: працює лише коли сторінка відкрита як сайт (http/https) */
 if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
@@ -651,7 +865,11 @@ if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
 
 /* раз на хвилину: перерахувати «сьогодні/завтра» і прибрати протерміноване виконане */
 setInterval(render,60000);
-document.addEventListener("visibilitychange",function(){if(!document.hidden)render();});
+document.addEventListener("visibilitychange",function(){
+  if(document.hidden)return;
+  render();
+  if(tok)syncNow();
+});
 })();
 </script>
 </body>
