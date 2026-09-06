@@ -44,11 +44,17 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);
 .iconbtn.big{font-size:17px;font-weight:400;padding:0}
 .iconbtn:active{background:var(--card2)}
 
-.chips{display:flex;gap:7px;overflow-x:auto;padding:0 0 11px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex:0 0 auto;max-width:210px;padding:8px 12px;border-radius:13px;border:1px solid var(--line);
-  background:var(--card);cursor:pointer;line-height:1.25;font-size:13px;font-weight:600;
-  display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* переносимо на новий рядок, а не ховаємо за прокруткою:
+   мишею таку смужку не прокрутити, і половина предметів була недосяжна */
+.chips{display:flex;flex-wrap:wrap;gap:7px;padding:0 0 11px}
+.chip{flex:0 1 auto;min-width:0;max-width:100%;padding:8px 12px;border-radius:13px;
+  border:1px solid var(--line);background:var(--card);cursor:pointer;line-height:1.25;
+  font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
+.chip .cnm{min-width:0;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chips.clip{overflow:hidden}
+.chexp{display:none;margin:-3px 0 9px;padding:3px 2px;background:none;border:0;color:var(--tx2);
+  font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit}
+.chexp.show{display:block}
 .chip .cd{width:7px;height:7px;border-radius:50%;background:var(--c);flex:0 0 auto}
 .chip .cn{font-size:11px;color:var(--tx2);font-variant-numeric:tabular-nums}
 .chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
@@ -150,6 +156,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
     <button class="iconbtn big" id="bMenu">☰</button>
   </div>
   <div class="chips" id="chips"></div>
+  <button class="chexp" id="bChips"></button>
  </div>
 </header>
 
@@ -343,7 +350,7 @@ function load(){
   return st;
 }
 var S=load();
-var editId=null, curSubjSel="", curFilter="", quickSel=null;
+var editId=null, curSubjSel="", curFilter="", quickSel=null, chipsOpen=false;
 
 function save(){
   S.savedAt=Date.now();
@@ -612,15 +619,27 @@ function renderChips(){
   for(i=0;i<L.length;i++)if(used.indexOf(L[i].subj)<0)used.push(L[i].subj);
   used.sort();
   var tot=L.filter(function(x){return !x.done;}).length;
-  var h='<div class="chip'+(curFilter?"":" on")+'" data-s=""><span>Усі</span>'+
+  var h='<div class="chip'+(curFilter?"":" on")+'" data-s=""><span class="cnm">Усі</span>'+
         (tot?'<span class="cn">'+tot+'</span>':"")+'</div>';
   for(i=0;i<used.length;i++){
     var s=used[i];
     var c=L.filter(function(x){return x.subj===s&&!x.done;}).length;
-    h+='<div class="chip'+(curFilter===s?" on":"")+'" data-s="'+esc(s)+'" style="--c:'+colorOf(s)+'">'+
-       '<span class="cd"></span><span>'+esc(s)+'</span>'+(c?'<span class="cn">'+c+'</span>':"")+'</div>';
+    h+='<div class="chip'+(curFilter===s?" on":"")+'" data-s="'+esc(s)+'" title="'+esc(s)+
+       '" style="--c:'+colorOf(s)+'">'+
+       '<span class="cd"></span><span class="cnm">'+esc(s)+'</span>'+
+       (c?'<span class="cn">'+c+'</span>':"")+'</div>';
   }
   C.innerHTML=h;
+  /* межу рахуємо з реальної висоти чипа, а не на око: два рядки, проміжок
+     між ними і нижній відступ смужки */
+  var E=document.getElementById("bChips");
+  C.style.maxHeight="";C.className="chips";
+  var f=C.firstElementChild;
+  var lim=Math.round((f?f.getBoundingClientRect().height:34)*2+18);
+  var over=C.scrollHeight>lim+2;
+  if(over&&!chipsOpen){C.className="chips clip";C.style.maxHeight=lim+"px";}
+  E.textContent=chipsOpen?"Згорнути ▴":"Показати всі предмети ▾";
+  E.className="chexp"+(over?" show":"");
 }
 function itemCard(it){
   var d=dueTxt(it.due),c=colorOf(it.subj);
@@ -809,6 +828,7 @@ function saveHtml(){
 /* ---------- події ---------- */
 document.getElementById("chips").addEventListener("click",function(e){
   var c=e.target.closest(".chip");if(!c)return;curFilter=c.dataset.s||"";render();});
+document.getElementById("bChips").onclick=function(){chipsOpen=!chipsOpen;render();};
 document.getElementById("list").addEventListener("click",function(e){
   var t=e.target.closest(".tick");
   if(t){
