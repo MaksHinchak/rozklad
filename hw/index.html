@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Домашки</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1420">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Домашки">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234c8dff'/%3E%3Ctext x='50' y='72' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif'%3E%F0%9F%93%92%3C/text%3E%3C/svg%3E">
+<script id="seed" type="application/json">null</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1420; --bg2:#161d2c; --card:#1b2334; --card2:#212b3f;
+  --tx:#e8edf7; --tx2:#8e9bb3; --line:#2a3548;
+  --acc:#4c8dff;
+  --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
+  --safe: env(safe-area-inset-bottom, 0px);
+}
+html[data-t="light"]{
+  --bg:#f4f6fb; --bg2:#ffffff; --card:#ffffff; --card2:#eef2f9;
+  --tx:#131a26; --tx2:#64708a; --line:#dfe5f0;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  -webkit-text-size-adjust:100%}
+body{padding-bottom:calc(96px + var(--safe))}
+.wrap{max-width:720px;margin:0 auto;padding:0 14px}
+
+header{position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.hd{display:flex;align-items:center;gap:9px;padding:12px 0 10px}
+.hd h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.3px;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iconbtn{height:38px;min-width:38px;padding:0 11px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card);color:var(--tx);font-size:13px;font-weight:700;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;gap:5px;
+  text-decoration:none}
+.iconbtn.big{font-size:17px;font-weight:400;padding:0}
+.iconbtn:active{background:var(--card2)}
+
+.chips{display:flex;gap:7px;overflow-x:auto;padding:0 0 11px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;max-width:210px;padding:8px 12px;border-radius:13px;border:1px solid var(--line);
+  background:var(--card);cursor:pointer;line-height:1.25;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .cd{width:7px;height:7px;border-radius:50%;background:var(--c);flex:0 0 auto}
+.chip .cn{font-size:11px;color:var(--tx2);font-variant-numeric:tabular-nums}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.chip.on .cn{color:rgba(255,255,255,.85)}
+.chip.on .cd{background:#fff}
+
+#banner{margin:12px 0 4px;padding:13px 15px;border-radius:15px;background:var(--card);
+  border:1px solid var(--line);display:none}
+#banner.show{display:block}
+#banner .lbl{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--acc);font-weight:700}
+#banner .lbl.bad{color:var(--bad)}
+#banner .sub{font-size:13px;color:var(--tx2);margin-top:3px}
+#banner .nm{font-size:16px;font-weight:650;margin-top:5px}
+
+#list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.card{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:12px 13px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.card.late{border-color:rgba(248,113,113,.55)}
+.card.dn{opacity:.55}
+.tick{flex:0 0 26px;width:26px;height:26px;margin-left:3px;border-radius:9px;
+  border:2px solid var(--line);background:transparent;cursor:pointer;color:transparent;
+  font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0}
+.tick:active{transform:scale(.9)}
+.card.dn .tick{background:var(--ok);border-color:var(--ok);color:#08101f}
+.bd{flex:1;min-width:0;cursor:pointer}
+.bd .t{font-size:15.5px;font-weight:600;line-height:1.35;word-break:break-word;white-space:pre-wrap}
+.card.dn .bd .t{text-decoration:line-through}
+.bd .m{margin-top:7px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:11px;padding:3px 8px;border-radius:8px;background:var(--c);color:#08101f;font-weight:700;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html[data-t="light"] .tag{color:#fff}
+.mt{font-size:12.5px;color:var(--tx2);display:inline-flex;align-items:center;gap:4px}
+.mt.warn{color:var(--warn)}
+.mt.bad{color:var(--bad);font-weight:650}
+.mt.ok{color:var(--ok)}
+
+.empty{text-align:center;padding:52px 20px;color:var(--tx2)}
+.empty .e1{font-size:40px}
+.empty .e2{margin-top:10px;font-size:14px;line-height:1.5}
+.sechd{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--tx2);
+  font-weight:700;margin:18px 0 2px;padding-left:4px}
+
+.fab{position:fixed;right:16px;bottom:calc(18px + var(--safe));width:58px;height:58px;
+  border-radius:19px;background:var(--acc);color:#fff;border:0;font-size:28px;cursor:pointer;
+  box-shadow:0 10px 26px rgba(76,141,255,.42);z-index:30;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.94)}
+
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;display:none;
+  align-items:flex-end;justify-content:center}
+.scrim.show{display:flex}
+.sheet{background:var(--bg2);width:100%;max-width:720px;border-radius:22px 22px 0 0;
+  max-height:92vh;overflow-y:auto;padding:8px 16px calc(22px + var(--safe));
+  animation:up .22s ease}
+@media(min-width:721px){.scrim{align-items:center}.sheet{border-radius:22px;max-height:88vh}}
+@keyframes up{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+.grab{width:38px;height:4px;border-radius:4px;background:var(--line);margin:6px auto 12px}
+.sheet h2{font-size:17px;margin:0 0 14px}
+label{display:block;font-size:12px;color:var(--tx2);margin:12px 0 6px;font-weight:600}
+input,select,textarea{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line);
+  background:var(--card);color:var(--tx);font-size:16px;font-family:inherit;outline:none}
+textarea{min-height:96px;resize:vertical;line-height:1.45}
+input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;min-width:78px;padding:10px 6px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card);color:var(--tx2);font-size:13px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn{width:100%;padding:14px;border-radius:13px;border:0;background:var(--acc);color:#fff;
+  font-size:16px;font-weight:650;cursor:pointer;margin-top:18px}
+.btn.gh{background:var(--card);color:var(--tx);border:1px solid var(--line);margin-top:9px}
+.btn.dg{background:transparent;color:#f87171;border:1px solid rgba(248,113,113,.4);margin-top:9px}
+.mrow{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--line);
+  cursor:pointer;font-size:15px;color:var(--tx);text-decoration:none}
+.mrow:last-of-type{border:0}
+.mrow .ic{width:26px;text-align:center;font-size:17px}
+.mrow .sd{margin-left:auto;color:var(--tx2);font-size:12px;text-align:right;max-width:48%}
+.hint{font-size:12px;color:var(--tx2);line-height:1.55;margin-top:14px;padding:12px;
+  background:var(--card);border-radius:12px}
+#fallback{padding:6px 0 30px}
+#fallback h3{font-size:20px;margin:16px 0 4px}
+#fallback h4{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--acc);
+  margin:22px 0 6px}
+#fallback table{width:100%;border-collapse:collapse}
+#fallback td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+#fallback td:first-child{width:104px;white-space:nowrap;font-weight:700}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <div class="hd">
+    <h1 id="ttl">Домашки</h1>
+    <a class="iconbtn" href="../" title="Розклад пар">📅</a>
+    <button class="iconbtn big" id="bMenu">☰</button>
+  </div>
+  <div class="chips" id="chips"></div>
+ </div>
+</header>
+
+<div class="wrap">
+  <div id="banner"></div>
+  <div id="list"></div>
+  <div id="fallback"></div>
+</div>
+
+<button class="fab" id="bAdd">+</button>
+
+<!-- редактор завдання -->
+<div class="scrim" id="scEdit"><div class="sheet">
+  <div class="grab"></div>
+  <h2 id="edTitle">Нова домашка</h2>
+
+  <label>Предмет</label>
+  <select id="fSubj"></select>
+
+  <label>Що задали</label>
+  <textarea id="fText" placeholder="Напр. §12, вправи 3–7 + конспект"></textarea>
+
+  <label>Здати до</label>
+  <div class="seg" id="fQuick">
+    <button data-k="0">Сьогодні</button>
+    <button data-k="1">Завтра</button>
+    <button data-k="7">Через тиждень</button>
+    <button data-k="">Без дати</button>
+  </div>
+  <input id="fDue" type="date" style="margin-top:8px">
+
+  <button class="btn" id="bSave">Зберегти</button>
+  <button class="btn dg" id="bDel" style="display:none">Видалити домашку</button>
+  <button class="btn gh" id="bCancel">Скасувати</button>
+</div></div>
+
+<!-- меню -->
+<div class="scrim" id="scMenu"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Меню</h2>
+
+  <div class="sechd">Записник</div>
+  <a class="mrow" href="../"><span class="ic">📅</span><span>Розклад пар</span><span class="sd">інша вкладка</span></a>
+  <div class="mrow" id="mTitle"><span class="ic">✏️</span><span>Назва</span><span class="sd" id="sdTitle"></span></div>
+  <div class="mrow" id="mTheme"><span class="ic">🌗</span><span>Тема</span><span class="sd" id="sdTheme"></span></div>
+  <div class="mrow" id="mKeep"><span class="ic">⏳</span><span>Тримати виконане</span><span class="sd" id="sdKeep"></span></div>
+  <div class="mrow" id="mSubj"><span class="ic">📚</span><span>Свої предмети</span><span class="sd" id="sdSubj"></span></div>
+
+  <div class="sechd">Дані</div>
+  <div class="mrow" id="mSaveHtml"><span class="ic">📤</span><span>Зберегти файл з домашками</span><span class="sd">для Telegram</span></div>
+  <div class="mrow" id="mExport"><span class="ic">💾</span><span>Експорт даних (.json)</span></div>
+  <div class="mrow" id="mImport"><span class="ic">📥</span><span>Імпорт даних (.json)</span></div>
+  <div class="mrow" id="mClearDone"><span class="ic">🧹</span><span>Прибрати виконані зараз</span></div>
+  <div class="mrow" id="mClear"><span class="ic">🗑</span><span>Очистити все</span></div>
+
+  <div class="hint">
+    <b>Як це працює.</b> Тиснеш «+», обираєш предмет зі свого розкладу і пишеш, що задали.
+    Зробив — торкнись квадратика зліва: завдання перекреслюється й падає вниз, у «Виконані».
+    Звідти воно зникає само через <b id="hKeep">3 дні</b> (термін можна змінити тут же, в меню).<br><br>
+    Предмети підтягуються з розкладу самі. Свій власний можна додати
+    просто в списку предметів — пункт «➕ Інший предмет…».<br><br>
+    Дані лежать у цьому браузері. Щоб перенести на інший пристрій —
+    «Зберегти файл з домашками» і відкрити той файл там.
+  </div>
+  <button class="btn gh" id="bCloseMenu">Закрити</button>
+</div></div>
+
+<input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+
+<script>
+(function(){
+"use strict";
+
+var MON=["січ","лют","бер","кві","тра","чер","лип","сер","вер","жов","лис","гру"];
+var PAL=["#4c8dff","#34d399","#a78bfa","#fbbf24","#f472b6","#38bdf8","#fb923c","#4ade80","#e879f9","#22d3ee"];
+/* предмети 241-1 — запасний список, якщо розклад недоступний */
+var BASE=["Іноземна мова (за професійним спрямуванням)","Веб програмування",
+ "Програмування мовою Java","Ймовірнісні моделі та алгоритми",
+ "Сучасні парадигми програмування мовою Python","Теорія прийняття рішень",
+ "Організація баз даних та знань","Основи національного спротиву (для хлопців)"];
+
+/* сховище прив'язане до адреси сторінки — як у розкладі */
+var PATH=(typeof location!=="undefined"&&location.pathname)||"";
+var KEY="hw_v1:"+PATH, SEEDKEY="hw_seed:"+PATH;
+var DAY=86400000;
+
+function blank(){
+  return {v:1,savedAt:0,title:"Домашки",theme:"dark",keep:3,subjects:[],items:[]};
+}
+function load(){
+  var seed=null,loc=null;
+  try{var s=document.getElementById("seed").textContent.trim();if(s&&s!=="null")seed=JSON.parse(s);}catch(e){}
+  try{var l=localStorage.getItem(KEY);if(l)loc=JSON.parse(l);}catch(e){}
+  var st=null;
+  /* свіжодоставлений файл (новий seedId) застосовується один раз безумовно */
+  if(seed&&seed.seedId){
+    var last=null;try{last=localStorage.getItem(SEEDKEY);}catch(e){}
+    if(last!==seed.seedId){st=seed;try{localStorage.setItem(SEEDKEY,seed.seedId);}catch(e){}}
+  }
+  if(!st){
+    if(seed&&loc) st=(loc.savedAt||0)>=(seed.savedAt||0)?loc:seed;
+    else st=loc||seed||blank();
+  }
+  var b=blank();for(var k in b){if(st[k]===undefined)st[k]=b[k];}
+  if(!Array.isArray(st.items))st.items=[];
+  if(!Array.isArray(st.subjects))st.subjects=[];
+  if(!(+st.keep>0))st.keep=3;
+  return st;
+}
+var S=load();
+var editId=null, curSubjSel="", curFilter="", quickSel=null;
+
+function save(){S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function nTask(n){
+  var a=n%10,b=n%100;
+  if(a>=1&&a<=4&&(b<11||b>14))return n+" завдання";
+  return n+" завдань";
+}
+function nDay(n){
+  var a=n%10,b=n%100;
+  if(a===1&&b!==11)return n+" день";
+  if(a>=2&&a<=4&&(b<12||b>14))return n+" дні";
+  return n+" днів";
+}
+function colorOf(s){
+  var h=0;s=String(s||"");
+  for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;
+  return PAL[h%PAL.length];
+}
+
+/* ---------- дати ---------- */
+function plusStr(n){
+  var d=new Date();d.setDate(d.getDate()+n);
+  return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
+}
+function dleft(due){                       // скільки днів лишилось (0 = сьогодні)
+  if(!due)return null;
+  var p=due.split("-");
+  var a=Date.UTC(+p[0],+p[1]-1,+p[2]);
+  var n=new Date();
+  var b=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate());
+  return Math.round((a-b)/DAY);
+}
+function dueTxt(due){
+  var d=dleft(due);
+  if(d===null)return null;
+  if(d<0)return {t:"прострочено "+nDay(-d),c:"bad"};
+  if(d===0)return {t:"сьогодні",c:"bad"};
+  if(d===1)return {t:"завтра",c:"warn"};
+  if(d<=6)return {t:"через "+nDay(d),c:"warn"};
+  var p=due.split("-");
+  return {t:"до "+(+p[2])+" "+MON[+p[1]-1],c:""};
+}
+
+/* ---------- предмети: з розкладу на цьому ж сайті ---------- */
+function fromRozklad(){
+  var parent=PATH.replace(/[^\/]*$/,"").replace(/[^\/]*\/$/,"");
+  var mine=[],all=[],i,k;
+  try{
+    for(i=0;i<localStorage.length;i++){
+      k=localStorage.key(i);
+      if(!k||k.indexOf("rozklad_v1:")!==0)continue;
+      var p=k.slice(11);
+      if(p===parent||p===parent+"index.html")mine.push(k);else all.push(k);
+    }
+  }catch(e){return [];}
+  var keys=mine.length?mine:all, out=[];
+  for(i=0;i<keys.length;i++){
+    var st=null;try{st=JSON.parse(localStorage.getItem(keys[i]));}catch(e){}
+    if(!st||!st.days)continue;
+    for(var d=0;d<st.days.length;d++){
+      var arr=st.days[d]||[];
+      for(var j=0;j<arr.length;j++){
+        var s=(arr[j].subj||"").trim();
+        if(s&&out.indexOf(s)<0)out.push(s);
+      }
+    }
+  }
+  return out;
+}
+function subjects(){
+  var out=[],i;
+  var src=fromRozklad();
+  if(!src.length)src=BASE;
+  for(i=0;i<src.length;i++)if(out.indexOf(src[i])<0)out.push(src[i]);
+  for(i=0;i<S.subjects.length;i++)if(out.indexOf(S.subjects[i])<0)out.push(S.subjects[i]);
+  for(i=0;i<S.items.length;i++){
+    var s=S.items[i].subj;
+    if(s&&out.indexOf(s)<0)out.push(s);
+  }
+  return out;
+}
+
+/* ---------- виконане само зникає ---------- */
+function purge(){
+  var lim=(+S.keep||3)*DAY, now=Date.now(), n=S.items.length;
+  S.items=S.items.filter(function(it){
+    if(!it.done)return true;
+    return (now-(it.doneAt||now))<lim;
+  });
+  if(S.items.length!==n)save();
+}
+function leftDays(it){
+  var lim=(+S.keep||3)*DAY;
+  return Math.max(1,Math.ceil(((it.doneAt||Date.now())+lim-Date.now())/DAY));
+}
+
+/* ---------- вибірки ---------- */
+function byDue(a,b){
+  var da=dleft(a.due),db=dleft(b.due);
+  if(da===null&&db===null)return (a.created||0)-(b.created||0);
+  if(da===null)return 1;
+  if(db===null)return -1;
+  if(da!==db)return da-db;
+  return (a.created||0)-(b.created||0);
+}
+function active(){
+  return S.items.filter(function(it){return !it.done&&(!curFilter||it.subj===curFilter);}).sort(byDue);
+}
+function doneList(){
+  return S.items.filter(function(it){return it.done&&(!curFilter||it.subj===curFilter);})
+    .sort(function(a,b){return (b.doneAt||0)-(a.doneAt||0);});
+}
+
+/* ---------- рендер ---------- */
+function renderChips(){
+  var C=document.getElementById("chips"),used=[],i;
+  for(i=0;i<S.items.length;i++)if(used.indexOf(S.items[i].subj)<0)used.push(S.items[i].subj);
+  used.sort();
+  var tot=S.items.filter(function(x){return !x.done;}).length;
+  var h='<div class="chip'+(curFilter?"":" on")+'" data-s=""><span>Усі</span>'+
+        (tot?'<span class="cn">'+tot+'</span>':"")+'</div>';
+  for(i=0;i<used.length;i++){
+    var s=used[i];
+    var c=S.items.filter(function(x){return x.subj===s&&!x.done;}).length;
+    h+='<div class="chip'+(curFilter===s?" on":"")+'" data-s="'+esc(s)+'" style="--c:'+colorOf(s)+'">'+
+       '<span class="cd"></span><span>'+esc(s)+'</span>'+(c?'<span class="cn">'+c+'</span>':"")+'</div>';
+  }
+  C.innerHTML=h;
+}
+function itemCard(it){
+  var d=dueTxt(it.due),c=colorOf(it.subj);
+  var late=!it.done&&d&&d.c==="bad";
+  var meta='<span class="tag">'+esc(it.subj||"Без предмета")+'</span>';
+  if(it.done)meta+='<span class="mt ok">✓ зникне через '+nDay(leftDays(it))+'</span>';
+  else if(d)meta+='<span class="mt '+d.c+'">📅 '+esc(d.t)+'</span>';
+  return '<div class="card'+(it.done?" dn":"")+(late?" late":"")+'" style="--c:'+c+'" data-id="'+esc(it.id)+'">'+
+    '<button class="tick" data-tick="'+esc(it.id)+'">✓</button>'+
+    '<div class="bd"><div class="t">'+esc(it.text||"—")+'</div>'+
+    '<div class="m">'+meta+'</div></div></div>';
+}
+function renderList(){
+  var L=document.getElementById("list"),a=active(),d=doneList(),h="";
+  if(!a.length&&!d.length){
+    L.innerHTML='<div class="empty"><div class="e1">'+(S.items.length?"🔍":"📒")+'</div><div class="e2">'+
+      (curFilter?'<b>'+esc(curFilter)+'</b><br>Тут поки порожньо.':
+                 'Домашок немає.<br>Натисни «+», щоб записати.')+'</div></div>';
+    return;
+  }
+  if(!a.length){
+    h+='<div class="empty" style="padding:34px 20px"><div class="e1">🎉</div>'+
+       '<div class="e2">Усе зроблено'+(curFilter?' з предмета «'+esc(curFilter)+'»':"")+'.</div></div>';
+  }
+  for(var i=0;i<a.length;i++)h+=itemCard(a[i]);
+  if(d.length){
+    h+='<div class="sechd">Виконані · зникають через '+nDay(+S.keep||3)+'</div>';
+    for(var j=0;j<d.length;j++)h+=itemCard(d[j]);
+  }
+  L.innerHTML=h;
+}
+function renderBanner(){
+  var B=document.getElementById("banner");
+  var a=S.items.filter(function(x){return !x.done;}).sort(byDue);
+  if(!a.length){
+    if(!S.items.length){B.className="";B.innerHTML="";return;}
+    B.innerHTML='<div class="lbl">Чисто</div><div class="sub" style="margin-top:5px">Усі домашки зроблені 🎉</div>';
+    B.className="show";return;
+  }
+  var late=a.filter(function(x){var d=dleft(x.due);return d!==null&&d<0;}).length;
+  var tdy=a.filter(function(x){return dleft(x.due)===0;}).length;
+  var nx=null;
+  for(var i=0;i<a.length;i++){var dd=dleft(a[i].due);if(dd!==null&&dd>0){nx=a[i];break;}}
+  if(late){
+    B.innerHTML='<div class="lbl bad">Прострочено</div><div class="nm">'+nTask(late)+'</div>'+
+      '<div class="sub">Всього активних: '+nTask(a.length)+'</div>';
+  }else if(tdy){
+    B.innerHTML='<div class="lbl">На сьогодні</div><div class="nm">'+nTask(tdy)+'</div>'+
+      '<div class="sub">Всього активних: '+nTask(a.length)+'</div>';
+  }else if(nx){
+    B.innerHTML='<div class="lbl">Найближче</div><div class="nm">'+esc(nx.subj)+'</div>'+
+      '<div class="sub">'+esc(dueTxt(nx.due).t)+' · всього активних: '+nTask(a.length)+'</div>';
+  }else{
+    B.innerHTML='<div class="lbl">Активні</div><div class="nm">'+nTask(a.length)+'</div>'+
+      '<div class="sub">Без дати здачі</div>';
+  }
+  B.className="show";
+}
+function render(){
+  purge();
+  document.documentElement.setAttribute("data-t",S.theme);
+  document.getElementById("ttl").textContent=S.title||"Домашки";
+  document.getElementById("sdTheme").textContent=S.theme==="dark"?"Темна":"Світла";
+  document.getElementById("sdTitle").textContent=S.title||"";
+  document.getElementById("sdKeep").textContent=nDay(+S.keep||3);
+  document.getElementById("hKeep").textContent=nDay(+S.keep||3);
+  document.getElementById("sdSubj").textContent=subjects().length+" у списку";
+  var fb=document.getElementById("fallback");if(fb)fb.style.display="none";
+  renderChips();renderBanner();renderList();
+}
+
+/* ---------- статична версія (якщо скрипти не запустились) ---------- */
+function fallbackHtml(){
+  var h='<h3>'+esc(S.title||"Домашки")+'</h3>';
+  var a=S.items.filter(function(x){return !x.done;}).sort(byDue);
+  if(!a.length)return h+'<p>Активних домашок немає.</p>';
+  var subs=[],i;
+  for(i=0;i<a.length;i++)if(subs.indexOf(a[i].subj)<0)subs.push(a[i].subj);
+  for(var s=0;s<subs.length;s++){
+    h+='<h4>'+esc(subs[s]||"Без предмета")+'</h4><table>';
+    for(i=0;i<a.length;i++){
+      if(a[i].subj!==subs[s])continue;
+      var d=dueTxt(a[i].due);
+      h+='<tr><td>'+(d?esc(d.t):"без дати")+'</td><td>'+esc(a[i].text)+'</td></tr>';
+    }
+    h+='</table>';
+  }
+  return h;
+}
+
+/* ---------- редактор ---------- */
+var ADD="__add__";
+function fillSubjSel(){
+  var list=subjects(),h="",i;
+  if(!curSubjSel&&list.length)curSubjSel=list[0];
+  if(curSubjSel&&list.indexOf(curSubjSel)<0)list.push(curSubjSel);
+  for(i=0;i<list.length;i++)
+    h+='<option value="'+esc(list[i])+'"'+(list[i]===curSubjSel?" selected":"")+'>'+esc(list[i])+'</option>';
+  h+='<option value="'+ADD+'">➕ Інший предмет…</option>';
+  document.getElementById("fSubj").innerHTML=h;
+}
+function markQuick(){
+  var bs=document.getElementById("fQuick").children;
+  for(var i=0;i<bs.length;i++)bs[i].className=(bs[i].dataset.k===quickSel?"on":"");
+}
+function syncQuick(){
+  var v=document.getElementById("fDue").value;
+  quickSel = v===""?"" : (v===plusStr(0)?"0" : (v===plusStr(1)?"1" : (v===plusStr(7)?"7":null)));
+  markQuick();
+}
+function find(id){
+  for(var i=0;i<S.items.length;i++)if(S.items[i].id===id)return S.items[i];
+  return null;
+}
+function openEdit(id){
+  var it=id?find(id):null;
+  editId=it?it.id:null;
+  document.getElementById("edTitle").textContent=it?"Редагувати домашку":"Нова домашка";
+  curSubjSel=it?it.subj:(curFilter||"");
+  fillSubjSel();
+  document.getElementById("fText").value=it?it.text||"":"";
+  document.getElementById("fDue").value=it?(it.due||""):"";
+  syncQuick();
+  document.getElementById("bDel").style.display=it?"block":"none";
+  document.getElementById("scEdit").className="scrim show";
+  if(!it)setTimeout(function(){document.getElementById("fText").focus();},150);
+}
+function closeEdit(){document.getElementById("scEdit").className="scrim";}
+function doSave(){
+  var txt=document.getElementById("fText").value.trim();
+  if(!txt){document.getElementById("fText").focus();return;}
+  var subj=document.getElementById("fSubj").value;
+  if(subj===ADD)subj=curSubjSel;
+  var due=document.getElementById("fDue").value||"";
+  var it=editId?find(editId):null;
+  if(it){it.subj=subj;it.text=txt;it.due=due;}
+  else S.items.push({id:"h"+Date.now()+Math.random().toString(36).slice(2,6),
+    subj:subj,text:txt,due:due,done:false,doneAt:0,created:Date.now()});
+  save();closeEdit();render();
+}
+
+/* ---------- файли ---------- */
+function dl(blob,name){
+  var u=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},400);
+}
+function saveHtml(){
+  save();
+  var c=document.documentElement.cloneNode(true);
+  var out=JSON.parse(JSON.stringify(S));
+  out.subjects=subjects();                 // щоб на новому пристрої предмети були на місці
+  out.seedId="e"+Date.now()+Math.random().toString(36).slice(2,6);
+  c.querySelector("#seed").textContent=JSON.stringify(out);
+  ["#list","#banner","#chips","#fSubj"].forEach(function(s){
+    var e=c.querySelector(s);if(e)e.innerHTML="";});
+  var fbc=c.querySelector("#fallback");
+  if(fbc){fbc.removeAttribute("style");fbc.innerHTML=fallbackHtml();}
+  ["#scEdit","#scMenu"].forEach(function(s){
+    var e=c.querySelector(s);if(e)e.className="scrim";});
+  c.setAttribute("data-t",S.theme);
+  dl(new Blob(["<!doctype html>\n"+c.outerHTML],{type:"text/html;charset=utf-8"}),"domashki.html");
+}
+
+/* ---------- події ---------- */
+document.getElementById("chips").addEventListener("click",function(e){
+  var c=e.target.closest(".chip");if(!c)return;curFilter=c.dataset.s||"";render();});
+document.getElementById("list").addEventListener("click",function(e){
+  var t=e.target.closest(".tick");
+  if(t){
+    var it=find(t.dataset.tick);if(!it)return;
+    it.done=!it.done;it.doneAt=it.done?Date.now():0;
+    save();render();return;
+  }
+  var c=e.target.closest(".card");if(!c)return;openEdit(c.dataset.id);});
+document.getElementById("bAdd").onclick=function(){openEdit(null);};
+document.getElementById("bCancel").onclick=closeEdit;
+document.getElementById("bSave").onclick=doSave;
+document.getElementById("bDel").onclick=function(){
+  if(!editId)return;
+  if(confirm("Видалити цю домашку?")){
+    S.items=S.items.filter(function(x){return x.id!==editId;});
+    save();closeEdit();render();}};
+document.getElementById("fSubj").onchange=function(){
+  if(this.value===ADD){
+    var n=prompt("Назва предмета:","");
+    if(n&&n.trim()){
+      n=n.trim();
+      if(S.subjects.indexOf(n)<0)S.subjects.push(n);
+      curSubjSel=n;save();
+    }
+    fillSubjSel();
+  }else curSubjSel=this.value;
+};
+document.getElementById("fQuick").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  var k=b.dataset.k;
+  document.getElementById("fDue").value=(k===""?"":plusStr(+k));
+  quickSel=k;markQuick();});
+document.getElementById("fDue").addEventListener("change",syncQuick);
+
+document.getElementById("bMenu").onclick=function(){
+  document.getElementById("scMenu").className="scrim show";};
+document.getElementById("bCloseMenu").onclick=function(){
+  document.getElementById("scMenu").className="scrim";};
+
+document.getElementById("mTheme").onclick=function(){
+  S.theme=S.theme==="dark"?"light":"dark";save();render();};
+document.getElementById("mTitle").onclick=function(){
+  var t=prompt("Назва записника:",S.title||"");
+  if(t!==null){S.title=t.trim()||"Домашки";save();render();}};
+document.getElementById("mKeep").onclick=function(){
+  var t=prompt("Скільки днів тримати виконані домашки, перш ніж вони зникнуть?",String(+S.keep||3));
+  if(t===null)return;
+  var n=parseInt(t,10);
+  if(!(n>0&&n<=60)){alert("Введи число від 1 до 60.");return;}
+  S.keep=n;save();render();};
+document.getElementById("mSubj").onclick=function(){
+  var t=prompt("Свої предмети (по одному в рядку). Ті, що з розкладу, підтягуються самі:",
+    S.subjects.join("\n"));
+  if(t===null)return;
+  S.subjects=t.split("\n").map(function(x){return x.trim();}).filter(function(x){return !!x;});
+  save();render();};
+document.getElementById("mSaveHtml").onclick=saveHtml;
+document.getElementById("mExport").onclick=function(){
+  save();dl(new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),"domashki.json");};
+document.getElementById("mImport").onclick=function(){document.getElementById("fileIn").click();};
+document.getElementById("fileIn").onchange=function(){
+  var f=this.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){try{
+    var d=JSON.parse(r.result);if(!d.items)throw 0;
+    document.getElementById("seed").textContent=JSON.stringify(d);
+    S=load();save();document.getElementById("scMenu").className="scrim";render();
+  }catch(e){alert("Не вдалося прочитати файл.");}};
+  r.readAsText(f);this.value="";};
+document.getElementById("mClearDone").onclick=function(){
+  var n=S.items.filter(function(x){return x.done;}).length;
+  if(!n){alert("Виконаних домашок немає.");return;}
+  if(confirm("Прибрати "+nTask(n)+" з розділу «Виконані»?")){
+    S.items=S.items.filter(function(x){return !x.done;});save();render();}};
+document.getElementById("mClear").onclick=function(){
+  if(confirm("Видалити ВСІ домашки?")){S.items=[];save();render();}};
+
+[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}]]
+  .forEach(function(x){document.getElementById(x[0]).addEventListener("click",function(e){
+    if(e.target===this)x[1]();});});
+
+/* init */
+render();
+
+/* офлайн-режим: працює лише коли сторінка відкрита як сайт (http/https) */
+if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+  navigator.serviceWorker.register("sw.js").catch(function(){});
+}
+
+/* раз на хвилину: перерахувати «сьогодні/завтра» і прибрати протерміноване виконане */
+setInterval(render,60000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)render();});
+})();
+</script>
+</body>
+</html>
