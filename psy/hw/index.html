@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f1420">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Домашки">
+<meta name="apple-mobile-web-app-title" content="Домашки ПС">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234c8dff'/%3E%3Ctext x='50' y='72' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif'%3E%F0%9F%93%92%3C/text%3E%3C/svg%3E">
@@ -152,15 +152,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
 
 <div class="wrap">
   <div id="banner"></div>
-
-  <div id="gate" class="empty" style="display:none">
-    <div class="e1">🔒</div>
-    <div class="e2"><b>Домашки — приватні</b><br>
-      Це записник власника. Щоб побачити й записувати, треба увійти.</div>
-    <button class="btn" id="gGo" style="max-width:260px;margin:22px auto 0">Увійти</button>
-    <div class="e2" style="margin-top:20px"><a href="../" style="color:var(--acc);text-decoration:none">← До розкладу</a></div>
-  </div>
-
   <div id="list"></div>
   <div id="fallback"></div>
 </div>
@@ -197,9 +188,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
   <div class="grab"></div>
   <h2>Меню</h2>
 
-  <div class="sechd">Доступ</div>
-  <div class="mrow" id="mLogin"></div>
-
   <div class="sechd">Записник</div>
   <a class="mrow" href="../"><span class="ic">📅</span><span>Розклад пар</span><span class="sd">інша вкладка</span></a>
   <div class="mrow" id="mTitle"><span class="ic">✏️</span><span>Назва</span><span class="sd" id="sdTitle"></span></div>
@@ -226,26 +214,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
   <button class="btn gh" id="bCloseMenu">Закрити</button>
 </div></div>
 
-<!-- вхід для власника -->
-<div class="scrim" id="scLogin"><div class="sheet">
-  <div class="grab"></div>
-  <h2>Вхід для власника</h2>
-
-  <label>Логін</label>
-  <input id="aUser" autocomplete="username" autocapitalize="none" spellcheck="false">
-
-  <label>Пароль</label>
-  <input id="aPass" type="password" autocomplete="current-password">
-
-  <div id="aErr" style="display:none;margin-top:12px;font-size:13px;color:#f87171;font-weight:600">
-    Невірний логін або пароль.</div>
-
-  <button class="btn" id="aGo">Увійти</button>
-  <button class="btn gh" id="aCancel">Скасувати</button>
-
-  <div class="hint">Вхід запам'ятовується на цьому пристрої назавжди — вводити щоразу не треба.</div>
-</div></div>
-
 <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
 
 <script>
@@ -254,33 +222,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc)}
 
 var MON=["січ","лют","бер","кві","тра","чер","лип","сер","вер","жов","лис","гру"];
 var PAL=["#4c8dff","#34d399","#a78bfa","#fbbf24","#f472b6","#38bdf8","#fb923c","#4ade80","#e879f9","#22d3ee"];
-/* предмети 241-1 — запасний список, якщо розклад недоступний */
-var BASE=["Іноземна мова (за професійним спрямуванням)","Веб програмування",
- "Програмування мовою Java","Ймовірнісні моделі та алгоритми",
- "Сучасні парадигми програмування мовою Python","Теорія прийняття рішень",
- "Організація баз даних та знань","Основи національного спротиву (для хлопців)"];
-
-/* ---------- замок власника ----------
-   Це замок на інтерфейсі, а не справжній захист: сторінка статична, і той,
-   хто вміє відкрити консоль, його обійде. Але самих домашок у чужому
-   браузері однаково немає — вони лежать лише тут, у localStorage. */
-var AKEY="adm_v1:main", AHASH="a2758e321962fcb5";
-function ahash(u,p){
-  var s="rz1|"+String(u).trim().toLowerCase()+"|"+String(p);
-  var h1=0x811c9dc5>>>0,h2=0x01000193>>>0;
-  for(var i=0;i<s.length;i++){
-    var c=s.charCodeAt(i);
-    h1=(h1^c)>>>0;h1=Math.imul(h1,16777619)>>>0;
-    h2=(h2+c*(i+7))>>>0;h2=(h2^(h2<<5))>>>0;h2=Math.imul(h2,2654435761)>>>0;
-  }
-  return ("0000000"+h1.toString(16)).slice(-8)+("0000000"+h2.toString(16)).slice(-8);
-}
-var admin=false;
-try{admin=localStorage.getItem(AKEY)===AHASH;}catch(e){}
-function setAdmin(v){
-  admin=v;
-  try{v?localStorage.setItem(AKEY,AHASH):localStorage.removeItem(AKEY);}catch(e){}
-}
+/* предмети психології — запасний список, якщо розклад недоступний */
+var BASE=[
+ "Психологія розвитку",
+ "Психодіагностика",
+ "Соціальна психологія",
+ "Профілактика домашнього насильства",
+ "Іноземна мова",
+ "Безбар'єрне середовище і соціальна інклюзія",
+ "Психологія самооцінки та особистісних кордонів",
+ "Практика",
+ "Філософія"];
 
 /* сховище прив'язане до адреси сторінки — як у розкладі */
 var PATH=(typeof location!=="undefined"&&location.pathname)||"";
@@ -501,25 +453,8 @@ function renderBanner(){
   B.className="show";
 }
 function render(){
-  document.documentElement.setAttribute("data-t",S.theme);
-  var G=document.getElementById("gate");
-  if(!admin){                       /* гість не бачить ані домашок, ані меню */
-    G.style.display="block";
-    document.getElementById("bMenu").style.display="none";
-    document.getElementById("bAdd").style.display="none";
-    document.getElementById("chips").innerHTML="";
-    document.getElementById("list").innerHTML="";
-    document.getElementById("banner").innerHTML="";
-    document.getElementById("banner").className="";
-    var f0=document.getElementById("fallback");if(f0)f0.style.display="none";
-    return;
-  }
-  G.style.display="none";
-  document.getElementById("mLogin").innerHTML=
-    '<span class="ic">🔓</span><span>Вийти з режиму власника</span><span class="sd">Maks</span>';
-  document.getElementById("bMenu").style.display="flex";
-  document.getElementById("bAdd").style.display="flex";
   purge();
+  document.documentElement.setAttribute("data-t",S.theme);
   document.getElementById("ttl").textContent=S.title||"Домашки";
   document.getElementById("sdTheme").textContent=S.theme==="dark"?"Темна":"Світла";
   document.getElementById("sdTitle").textContent=S.title||"";
@@ -617,7 +552,7 @@ function saveHtml(){
     var e=c.querySelector(s);if(e)e.innerHTML="";});
   var fbc=c.querySelector("#fallback");
   if(fbc){fbc.removeAttribute("style");fbc.innerHTML=fallbackHtml();}
-  ["#scEdit","#scMenu","#scLogin"].forEach(function(s){
+  ["#scEdit","#scMenu"].forEach(function(s){
     var e=c.querySelector(s);if(e)e.className="scrim";});
   c.setAttribute("data-t",S.theme);
   dl(new Blob(["<!doctype html>\n"+c.outerHTML],{type:"text/html;charset=utf-8"}),"domashki.html");
@@ -702,41 +637,7 @@ document.getElementById("mClearDone").onclick=function(){
 document.getElementById("mClear").onclick=function(){
   if(confirm("Видалити ВСІ домашки?")){S.items=[];save();render();}};
 
-function closeLogin(){document.getElementById("scLogin").className="scrim";}
-function openLogin(){
-  document.getElementById("aUser").value="";
-  document.getElementById("aPass").value="";
-  document.getElementById("aErr").style.display="none";
-  document.getElementById("scLogin").className="scrim show";
-  setTimeout(function(){document.getElementById("aUser").focus();},150);
-}
-document.getElementById("gGo").onclick=openLogin;
-document.getElementById("mLogin").onclick=function(){
-  if(admin){
-    if(confirm("Вийти з режиму власника? Домашки нікуди не дінуться, але сторінка замкнеться."))
-      {setAdmin(false);document.getElementById("scMenu").className="scrim";render();}
-    return;
-  }
-  openLogin();
-};
-function tryLogin(){
-  var u=document.getElementById("aUser").value,pw=document.getElementById("aPass").value;
-  if(ahash(u,pw)!==AHASH){
-    document.getElementById("aErr").style.display="block";
-    document.getElementById("aPass").value="";
-    document.getElementById("aPass").focus();return;
-  }
-  setAdmin(true);closeLogin();render();
-}
-document.getElementById("aGo").onclick=tryLogin;
-document.getElementById("aCancel").onclick=closeLogin;
-document.getElementById("aPass").addEventListener("keydown",function(e){
-  if(e.key==="Enter")tryLogin();});
-document.getElementById("aUser").addEventListener("keydown",function(e){
-  if(e.key==="Enter")document.getElementById("aPass").focus();});
-
-[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}],
- ["scLogin",closeLogin]]
+[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}]]
   .forEach(function(x){document.getElementById(x[0]).addEventListener("click",function(e){
     if(e.target===this)x[1]();});});
 

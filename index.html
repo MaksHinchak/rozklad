@@ -215,22 +215,25 @@ html[data-t="light"] .seg button.on{color:#fff}
   <div class="grab"></div>
   <h2>Меню</h2>
 
-  <div class="sechd">Записник</div>
-  <a class="mrow" href="hw/" style="color:var(--tx);text-decoration:none"><span class="ic">📒</span><span>Домашки</span><span class="sd">що задали</span></a>
+  <div class="sechd">Доступ</div>
+  <div class="mrow" id="mLogin"></div>
 
-  <div class="sechd">Тижні</div>
-  <div class="mrow" id="mWeekNow"><span class="ic">🔁</span><span>Цей тиждень</span><span class="sd" id="sdWeekNow"></span></div>
-  <div class="mrow" id="mWeekMode"><span class="ic">⚙️</span><span>Чергування</span><span class="sd" id="sdWeekMode"></span></div>
+  <div class="sechd" data-adm>Записник</div>
+  <a class="mrow" data-adm href="hw/" style="color:var(--tx);text-decoration:none"><span class="ic">📒</span><span>Домашки</span><span class="sd">що задали</span></a>
+
+  <div class="sechd" data-adm>Тижні</div>
+  <div class="mrow" data-adm id="mWeekNow"><span class="ic">🔁</span><span>Цей тиждень</span><span class="sd" id="sdWeekNow"></span></div>
+  <div class="mrow" data-adm id="mWeekMode"><span class="ic">⚙️</span><span>Чергування</span><span class="sd" id="sdWeekMode"></span></div>
 
   <div class="sechd">Розклад</div>
-  <div class="mrow" id="mTitle"><span class="ic">✏️</span><span>Назва / група</span><span class="sd" id="sdTitle"></span></div>
+  <div class="mrow" data-adm id="mTitle"><span class="ic">✏️</span><span>Назва / група</span><span class="sd" id="sdTitle"></span></div>
   <div class="mrow" id="mTheme"><span class="ic">🌗</span><span>Тема</span><span class="sd" id="sdTheme"></span></div>
   <div class="mrow" id="mSaveHtml"><span class="ic">📤</span><span>Зберегти файл з розкладом</span><span class="sd">для Telegram</span></div>
-  <div class="mrow" id="mExport"><span class="ic">💾</span><span>Експорт даних (.json)</span></div>
-  <div class="mrow" id="mImport"><span class="ic">📥</span><span>Імпорт даних (.json)</span></div>
-  <div class="mrow" id="mClear"><span class="ic">🗑</span><span>Очистити весь розклад</span></div>
+  <div class="mrow" data-adm id="mExport"><span class="ic">💾</span><span>Експорт даних (.json)</span></div>
+  <div class="mrow" data-adm id="mImport"><span class="ic">📥</span><span>Імпорт даних (.json)</span></div>
+  <div class="mrow" data-adm id="mClear"><span class="ic">🗑</span><span>Очистити весь розклад</span></div>
 
-  <div style="padding:16px 4px 0">
+  <div data-adm style="padding:16px 4px 0">
     <div style="font-size:12px;color:var(--tx2);font-weight:600">Копіювати поточний день у:</div>
     <div class="copyd" id="copyD"></div>
   </div>
@@ -247,6 +250,27 @@ html[data-t="light"] .seg button.on{color:#fff}
     4. Android: у Chrome «Додати на головний екран». iPhone: збережи у «Файли», відкрий у Safari.
   </div>
   <button class="btn gh" id="bCloseMenu">Закрити</button>
+</div></div>
+
+<!-- вхід для власника -->
+<div class="scrim" id="scLogin"><div class="sheet">
+  <div class="grab"></div>
+  <h2>Вхід для власника</h2>
+
+  <label>Логін</label>
+  <input id="aUser" autocomplete="username" autocapitalize="none" spellcheck="false">
+
+  <label>Пароль</label>
+  <input id="aPass" type="password" autocomplete="current-password">
+
+  <div id="aErr" style="display:none;margin-top:12px;font-size:13px;color:#f87171;font-weight:600">
+    Невірний логін або пароль.</div>
+
+  <button class="btn" id="aGo">Увійти</button>
+  <button class="btn gh" id="aCancel">Скасувати</button>
+
+  <div class="hint">Вхід запам'ятовується на цьому пристрої назавжди — вводити щоразу не треба.
+    Без нього розклад видно, але змінити його не можна.</div>
 </div></div>
 
 <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
@@ -268,6 +292,29 @@ var TYPES=[
 /* сітка ЧНУ: пари по 80 хв; після 2-ї та 4-ї перерва 20 хв, решта — 10 хв */
 var TIMES=[["08:20","09:40"],["09:50","11:10"],["11:30","12:50"],["13:00","14:20"],
            ["14:40","16:00"],["16:10","17:30"],["17:40","19:00"]];
+/* ---------- замок власника ----------
+   Це замок на інтерфейсі, а не справжній захист: сторінка статична, і той,
+   хто вміє відкрити консоль, його обійде. Сенс у тому, щоб чужі руки не
+   правили розклад випадково. Хеш навмисно простий (без crypto.subtle) —
+   щоб працювало і коли сторінку відкрито з файлу. */
+var AKEY="adm_v1:main", AHASH="a2758e321962fcb5";
+function ahash(u,p){
+  var s="rz1|"+String(u).trim().toLowerCase()+"|"+String(p);
+  var h1=0x811c9dc5>>>0,h2=0x01000193>>>0;
+  for(var i=0;i<s.length;i++){
+    var c=s.charCodeAt(i);
+    h1=(h1^c)>>>0;h1=Math.imul(h1,16777619)>>>0;
+    h2=(h2+c*(i+7))>>>0;h2=(h2^(h2<<5))>>>0;h2=Math.imul(h2,2654435761)>>>0;
+  }
+  return ("0000000"+h1.toString(16)).slice(-8)+("0000000"+h2.toString(16)).slice(-8);
+}
+var admin=false;
+try{admin=localStorage.getItem(AKEY)===AHASH;}catch(e){}
+function setAdmin(v){
+  admin=v;
+  try{v?localStorage.setItem(AKEY,AHASH):localStorage.removeItem(AKEY);}catch(e){}
+}
+
 /* сховище прив'язане до адреси сторінки — щоб кілька розкладів
    на одному домені не затирали дані одне одного */
 var PATH=(typeof location!=="undefined"&&location.pathname)||"";
@@ -373,7 +420,7 @@ function renderList(){
     var otherCnt=dayList(cur,other(w)).length;
     L.innerHTML='<div class="empty"><div class="e1">🌤</div><div class="e2"><b>'+DAYS[cur]+
       '</b> · '+wShort(w)+' тиждень<br>Пар немає.'+
-      (otherCnt?' Але на '+wShort(other(w))+' тижні їх '+plural(otherCnt)+'.':' Натисни «+», щоб додати.')+
+      (otherCnt?' Але на '+wShort(other(w))+' тижні їх '+plural(otherCnt)+'.':(admin?' Натисни «+», щоб додати.':''))+
       '</div></div>';
     return;
   }
@@ -445,7 +492,16 @@ function renderBanner(){
   }
   B.className="show";
 }
+function applyAdmin(){
+  document.getElementById("bAdd").style.display=admin?"flex":"none";
+  var r=document.querySelectorAll("[data-adm]");
+  for(var i=0;i<r.length;i++)r[i].style.display=admin?"":"none";
+  document.getElementById("mLogin").innerHTML= admin
+    ? '<span class="ic">🔓</span><span>Вийти з режиму власника</span><span class="sd">Maks</span>'
+    : '<span class="ic">🔒</span><span>Вхід для власника</span><span class="sd">щоб редагувати</span>';
+}
 function render(){
+  applyAdmin();
   document.documentElement.setAttribute("data-t",S.theme);
   document.getElementById("ttl").textContent=S.title||"Розклад пар";
   document.getElementById("sdTheme").textContent=S.theme==="dark"?"Темна":"Світла";
@@ -536,7 +592,7 @@ function saveHtml(){
     var e=c.querySelector(s);if(e)e.innerHTML="";});
   var fbc=c.querySelector("#fallback");
   if(fbc){fbc.removeAttribute("style");fbc.innerHTML=fallbackHtml();}
-  ["#scEdit","#scMenu"].forEach(function(s){
+  ["#scEdit","#scMenu","#scLogin"].forEach(function(s){
     var e=c.querySelector(s);if(e)e.className="scrim";});
   c.setAttribute("data-t",S.theme);
   dl(new Blob(["<!doctype html>\n"+c.outerHTML],{type:"text/html;charset=utf-8"}),"rozklad.html");
@@ -546,8 +602,9 @@ function saveHtml(){
 document.getElementById("days").addEventListener("click",function(e){
   var d=e.target.closest(".day");if(!d)return;cur=+d.dataset.d;render();});
 document.getElementById("list").addEventListener("click",function(e){
+  if(!admin)return;
   var c=e.target.closest(".card");if(!c)return;openEdit(c.dataset.id);});
-document.getElementById("bAdd").onclick=function(){openEdit(null);};
+document.getElementById("bAdd").onclick=function(){if(admin)openEdit(null);};
 document.getElementById("bCancel").onclick=closeEdit;
 document.getElementById("bSave").onclick=doSave;
 document.getElementById("bDel").onclick=function(){
@@ -608,7 +665,39 @@ document.getElementById("copyD").addEventListener("click",function(e){
     var q=JSON.parse(JSON.stringify(p));
     q.id="p"+Date.now()+Math.random().toString(36).slice(2,6);return q;});
   save();render();b.textContent="✓";});
-[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}]]
+function closeLogin(){document.getElementById("scLogin").className="scrim";}
+document.getElementById("mLogin").onclick=function(){
+  if(admin){
+    if(confirm("Вийти з режиму власника? Розклад лишиться, але редагувати не вийде."))
+      {setAdmin(false);document.getElementById("scMenu").className="scrim";render();}
+    return;
+  }
+  document.getElementById("aUser").value="";
+  document.getElementById("aPass").value="";
+  document.getElementById("aErr").style.display="none";
+  document.getElementById("scLogin").className="scrim show";
+  setTimeout(function(){document.getElementById("aUser").focus();},150);
+};
+function tryLogin(){
+  var u=document.getElementById("aUser").value,pw=document.getElementById("aPass").value;
+  if(ahash(u,pw)!==AHASH){
+    document.getElementById("aErr").style.display="block";
+    document.getElementById("aPass").value="";
+    document.getElementById("aPass").focus();return;
+  }
+  setAdmin(true);closeLogin();
+  document.getElementById("scMenu").className="scrim";
+  render();
+}
+document.getElementById("aGo").onclick=tryLogin;
+document.getElementById("aCancel").onclick=closeLogin;
+document.getElementById("aPass").addEventListener("keydown",function(e){
+  if(e.key==="Enter")tryLogin();});
+document.getElementById("aUser").addEventListener("keydown",function(e){
+  if(e.key==="Enter")document.getElementById("aPass").focus();});
+
+[["scEdit",closeEdit],["scMenu",function(){document.getElementById("scMenu").className="scrim";}],
+ ["scLogin",closeLogin]]
   .forEach(function(x){document.getElementById(x[0]).addEventListener("click",function(e){
     if(e.target===this)x[1]();});});
 
